@@ -32,18 +32,27 @@ def env_flag(name, default=False):
 
 
 def normalize_database_url(url):
+    if not url:
+        return url
     if url.startswith("postgres://"):
         return "postgresql://" + url[len("postgres://"):]
     return url
 
 
-app = Flask(__name__, static_folder="public", static_url_path="")
-app.config["SECRET_KEY"] = os.environ.get("SESSION_SECRET") or secrets.token_hex(32)
-database_url = normalize_database_url(
+_raw_db_url = (
     os.environ.get("DATABASE_URL")
     or os.environ.get("SUPABASE_DB_URL")
-    or "sqlite:///sol_memory.db"
 )
+
+if _raw_db_url:
+    database_url = normalize_database_url(_raw_db_url)
+elif os.environ.get("VERCEL"):
+    database_url = "sqlite:////tmp/sol_memory.db"
+else:
+    database_url = "sqlite:///sol_memory.db"
+
+app = Flask(__name__, static_folder="public", static_url_path="")
+app.config["SECRET_KEY"] = os.environ.get("SESSION_SECRET") or secrets.token_hex(32)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
@@ -424,6 +433,24 @@ def create_model_response(messages, model_choice):
 
     openai_model = openai_models.get(model_choice, "gpt-4o")
     return call_openai(openai_model) or call_openrouter(openrouter_models.get(model_choice, "openai/gpt-4o"))
+
+
+@app.route("/api/health")
+def health():
+    import sys
+    info = {
+        "status": "ok",
+        "python": sys.version,
+        "db_type": "postgresql" if database_url.startswith("postgresql") else "sqlite",
+        "vercel": bool(os.environ.get("VERCEL")),
+    }
+    try:
+        db.session.execute(text("SELECT 1"))
+        info["db_connected"] = True
+    except Exception as exc:
+        info["db_connected"] = False
+        info["db_error"] = str(exc)
+    return jsonify(info)
 
 
 @app.route("/")
