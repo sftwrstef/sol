@@ -219,9 +219,9 @@ def migrate_database():
     if "user" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("user")}
         if "display_name" not in columns:
-            db.session.execute(text("ALTER TABLE user ADD COLUMN display_name VARCHAR(120)"))
+            db.session.execute(text('ALTER TABLE "user" ADD COLUMN display_name VARCHAR(120)'))
         if "about_me" not in columns:
-            db.session.execute(text("ALTER TABLE user ADD COLUMN about_me TEXT"))
+            db.session.execute(text('ALTER TABLE "user" ADD COLUMN about_me TEXT'))
 
     if "user_preference" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("user_preference")}
