@@ -8,15 +8,12 @@ import tempfile
 from datetime import datetime, timedelta
 from functools import wraps
 
-import openai
 import requests
-import speech_recognition as sr
-import text2emotion as te
 from flask import Flask, g, jsonify, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
-from gtts import gTTS
 from sqlalchemy import inspect, text
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -34,15 +31,33 @@ def env_flag(name, default=False):
     return value.lower() in {"1", "true", "yes", "on"}
 
 
-app = Flask(__name__)
+def normalize_database_url(url):
+    if url.startswith("postgres://"):
+        return "postgresql://" + url[len("postgres://"):]
+    return url
+
+
+app = Flask(__name__, static_folder="public", static_url_path="")
 app.config["SECRET_KEY"] = os.environ.get("SESSION_SECRET") or secrets.token_hex(32)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///sol_memory.db")
+database_url = normalize_database_url(
+    os.environ.get("DATABASE_URL")
+    or os.environ.get("SUPABASE_DB_URL")
+    or "sqlite:///sol_memory.db"
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 app.config["SESSION_COOKIE_SECURE"] = env_flag("SESSION_COOKIE_SECURE", env_flag("FLASK_ENV") or env_flag("PRODUCTION"))
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=int(os.environ.get("SESSION_DAYS", "14")))
+
+engine_options = {"pool_pre_ping": True}
+if database_url.startswith("postgresql://") and "sslmode=" not in database_url:
+    engine_options["connect_args"] = {"sslmode": "require"}
+if env_flag("VERCEL") or ".pooler.supabase.com:6543" in database_url:
+    engine_options["poolclass"] = NullPool
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 
 trusted_hosts = [host.strip() for host in os.environ.get("TRUSTED_HOSTS", "").split(",") if host.strip()]
 if trusted_hosts:
@@ -211,28 +226,10 @@ def get_chat_history(conversation_id):
     msgs = Message.query.filter_by(conversation_id=conversation_id).order_by(Message.timestamp).all()
     return [{"role": message.role, "content": message.content} for message in msgs]
 
-
-def detect_emotion(text):
-    try:
-        emotions = te.get_emotion(text)
-        if not emotions:
-            return "neutral"
-        dominant = max(emotions.items(), key=lambda item: item[1])
-        emotion_map = {
-            "Happy": "happy",
-            "Sad": "sad",
-            "Angry": "angry",
-            "Fear": "fearful",
-            "Surprise": "surprised",
-        }
-        return emotion_map.get(dominant[0], "neutral") if dominant[1] > 0 else "neutral"
-    except Exception as exc:
-        app.logger.warning("Emotion detection failed: %s", exc)
-        return "neutral"
-
-
 def text_to_speech(text):
     try:
+        from gtts import gTTS
+
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
         gTTS(text=text, lang="en", slow=False).save(temp_file.name)
         with open(temp_file.name, "rb") as handle:
@@ -248,6 +245,8 @@ def text_to_speech(text):
 def speech_to_text(audio_data):
     temp_files = []
     try:
+        import speech_recognition as sr
+
         binary_data = base64.b64decode(audio_data.split(",")[1]) if isinstance(audio_data, str) and audio_data.startswith("data:") else audio_data
 
         temp_webm = tempfile.NamedTemporaryFile(suffix=".webm", delete=False)
@@ -286,7 +285,7 @@ def speech_to_text(audio_data):
                     pass
 
 
-def generate_local_response(user_message, emotion, mode):
+def generate_local_response(user_message, mode):
     if mode == "coding":
         return (
             "I can help with architecture, debugging, and code changes. "
@@ -304,15 +303,6 @@ def generate_local_response(user_message, emotion, mode):
             ]
         )
 
-    emotion_responses = {
-        "happy": "That's wonderful to hear. What's bringing you joy right now?",
-        "sad": "I hear that you're going through something hard. Would you like to talk about it?",
-        "angry": "That sounds really frustrating. What happened?",
-        "fearful": "It sounds like something has you worried. I'm here. What's going on?",
-    }
-    if emotion in emotion_responses:
-        return emotion_responses[emotion]
-
     return random.choice(
         [
             "I'm here with you. What would you like to explore?",
@@ -323,7 +313,7 @@ def generate_local_response(user_message, emotion, mode):
     )
 
 
-def build_system_prompt(mode, persona_name, custom_system_prompt, emotion):
+def build_system_prompt(mode, persona_name, custom_system_prompt):
     if custom_system_prompt:
         return custom_system_prompt
 
@@ -338,17 +328,9 @@ def build_system_prompt(mode, persona_name, custom_system_prompt, emotion):
         f"You are {persona_name or 'Sol'}, a warm and emotionally intelligent AI companion. "
         "You help people feel heard, safe, and understood. "
         "Be conversational, compassionate, and genuine. "
-        "When someone shares how they feel, validate their emotions before offering thoughts. "
+        "When someone shares something difficult, validate it before offering thoughts. "
         "Keep responses concise but meaningful."
     )
-    if emotion and emotion != "neutral":
-        emotion_map = {
-            "happy": "The user seems happy. Match their energy.",
-            "sad": "The user seems sad. Be especially gentle and empathetic.",
-            "angry": "The user seems frustrated. Be calm and understanding.",
-            "fearful": "The user seems anxious. Be reassuring.",
-        }
-        system_prompt += " " + emotion_map.get(emotion, "")
     return system_prompt
 
 
@@ -389,6 +371,8 @@ def create_model_response(messages, model_choice):
         if not openai_api_key:
             return None
         try:
+            import openai
+
             client = openai.OpenAI(api_key=openai_api_key)
             response = client.chat.completions.create(model=model_id, messages=messages, max_tokens=700)
             return response.choices[0].message.content
@@ -586,16 +570,15 @@ def chat():
         conversation.mode = mode
         db.session.commit()
 
-    emotion = detect_emotion(user_input) if mode == "companion" else None
     history = get_chat_history(conversation.id)
     history.append({"role": "user", "content": user_input})
-    system_prompt = build_system_prompt(mode, persona_name, custom_system_prompt, emotion)
+    system_prompt = build_system_prompt(mode, persona_name, custom_system_prompt)
     messages = [{"role": "system", "content": system_prompt}] + history
 
     reply = create_model_response(messages, model_choice)
     local_mode = not bool(reply)
     if not reply:
-        reply = generate_local_response(user_input, emotion, mode)
+        reply = generate_local_response(user_input, mode)
 
     if conversation.title == "New Chat":
         prefix = "Code: " if mode == "coding" else ""
@@ -604,14 +587,13 @@ def chat():
             conversation.title += "…"
         db.session.commit()
 
-    save_message("user", user_input, emotion, conversation.id)
+    save_message("user", user_input, None, conversation.id)
     save_message("assistant", reply, None, conversation.id)
 
     audio_data = text_to_speech(reply) if mode == "companion" else None
     result = {
         "message": reply,
         "timestamp": datetime.utcnow().isoformat(),
-        "emotion": emotion,
         "local_mode": local_mode,
         "conversation_id": conversation.id,
         "conversation_title": conversation.title,

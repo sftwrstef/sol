@@ -1,0 +1,8 @@
+.git
+.local
+instance
+attached_assets
+LangChainIntegration
+uv.lock
+generated-icon.png
+static

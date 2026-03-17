@@ -1,33 +1,40 @@
-# Deploying Sol Space
+# Deploying Sol Space on Vercel + Supabase
 
-## Recommended host
+## Stack
 
-Use Render with managed Postgres for the fastest production setup. The repo includes `render.yaml` so Render can provision:
+- Vercel runs the Flask app as a Python serverless function via `api/index.py`
+- Supabase provides Postgres
+- Vercel environment variables provide secrets
 
-- a Python web service
-- a managed Postgres database
-- generated session secret
-- secure cookie defaults
+## Supabase
 
-## Required secrets
+1. In Supabase, open the database connection settings.
+2. Copy the transaction pooler connection string.
+3. Use the `psycopg2`/SQLAlchemy form and keep `sslmode=require`.
+4. Set that value as `DATABASE_URL` in Vercel.
 
-Set these in the host environment:
+This app also accepts `SUPABASE_DB_URL`, but `DATABASE_URL` should be the primary value.
 
-- `SESSION_SECRET`
+## Vercel Environment Variables
+
+Set these in Vercel before the first deploy:
+
 - `DATABASE_URL`
-- `OPENAI_API_KEY` or `OPENROUTERAI_API` or `ANTHROPIC_API_KEY`
+- `SESSION_SECRET`
+- `SESSION_COOKIE_SECURE=true`
+- `SESSION_COOKIE_SAMESITE=Lax`
+- `OPENROUTERAI_API` if you are using OpenRouter
+- `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` if needed
 
-## Start command
+## Notes
 
-```bash
-gunicorn --bind 0.0.0.0:$PORT app:app
-```
+- `public/` is used for frontend assets so Vercel can serve them directly.
+- The app switches SQLAlchemy to `NullPool` on Vercel and works with Supabase pooler URLs.
+- Use the transaction pooler, not a raw direct connection, for serverless deployments.
 
 ## Before public launch
 
-- use managed Postgres, not SQLite
-- enforce HTTPS and keep `SESSION_COOKIE_SECURE=true`
-- rotate `SESSION_SECRET`
 - add rate limiting
 - add password reset/email verification
 - define chat retention and deletion policy
+- verify Supabase backups and restoration settings
