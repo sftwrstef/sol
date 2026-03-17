@@ -423,10 +423,32 @@ document.addEventListener("DOMContentLoaded", () => {
         item.className = "conv-item";
         item.dataset.id = conversation.id;
         item.classList.toggle("active", conversation.id === state.currentConvId);
+        item.dataset.mode = conversation.mode;
+        item.dataset.projectId = conversation.project_id || "";
 
         const title = document.createElement("span");
         title.className = "conv-item-title";
         title.textContent = conversation.title;
+
+        const meta = document.createElement("div");
+        meta.className = "conv-item-meta";
+        const modeTag = document.createElement("span");
+        modeTag.className = "conv-tag";
+        modeTag.textContent = conversation.mode === "coding" ? "Coding" : "Chat";
+        meta.appendChild(modeTag);
+        if (conversation.project_id) {
+            const project = state.projects.find((item) => item.id === conversation.project_id);
+            if (project) {
+                const projectTag = document.createElement("span");
+                projectTag.className = "conv-tag";
+                projectTag.textContent = project.name;
+                meta.appendChild(projectTag);
+            }
+        }
+
+        const titleWrap = document.createElement("div");
+        titleWrap.className = "conv-title-wrap";
+        titleWrap.append(title, meta);
 
         const deleteButton = document.createElement("button");
         deleteButton.className = "conv-delete";
@@ -464,8 +486,8 @@ document.addEventListener("DOMContentLoaded", () => {
         actions.className = "conv-actions";
         actions.append(projectAssign, deleteButton);
 
-        item.append(title, actions);
-        item.addEventListener("click", () => loadConversation(conversation.id));
+        item.append(titleWrap, actions);
+        item.addEventListener("click", () => loadConversation(conversation.id, conversation));
         return item;
     }
 
@@ -543,11 +565,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!state.user) {
             return;
         }
-        const params = new URLSearchParams({ mode: state.currentMode });
-        if (state.currentProjectId) {
-            params.set("project_id", state.currentProjectId);
-        }
-        const conversations = await apiFetch(`/api/conversations?${params.toString()}`);
+        const conversations = await apiFetch("/api/conversations");
         convList.innerHTML = "";
         conversations.forEach((conversation) => convList.appendChild(renderConversationItem(conversation)));
     }
@@ -573,7 +591,17 @@ document.addEventListener("DOMContentLoaded", () => {
         state.memories.forEach((memory) => memoryList.appendChild(renderMemoryItem(memory)));
     }
 
-    async function loadConversation(id) {
+    async function loadConversation(id, conversationMeta = null) {
+        if (conversationMeta) {
+            state.currentMode = conversationMeta.mode || "companion";
+            state.currentProjectId = conversationMeta.project_id || null;
+            modeButtons.forEach((button) => {
+                button.classList.toggle("active", button.dataset.mode === state.currentMode);
+            });
+            renderProjects();
+            updateModeUI();
+            updateCurrentProjectChip();
+        }
         state.currentConvId = id;
         chatContainer.innerHTML = "";
         const messages = await apiFetch(`/api/conversations/${id}/messages`);
