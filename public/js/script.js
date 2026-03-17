@@ -117,10 +117,22 @@ document.addEventListener("DOMContentLoaded", () => {
             opts.headers["X-CSRF-Token"] = state.csrfToken;
         }
 
-        const response = await fetch(url, opts);
-        const data = await response.json().catch(() => ({}));
+        let response;
+        try {
+            response = await fetch(url, opts);
+        } catch (error) {
+            throw new Error("Network error reaching the server");
+        }
+
+        const rawText = await response.text();
+        let data = {};
+        try {
+            data = rawText ? JSON.parse(rawText) : {};
+        } catch (error) {
+            data = {};
+        }
         if (!response.ok) {
-            throw new Error(data.error || "Request failed");
+            throw new Error(data.error || rawText || `Request failed (${response.status})`);
         }
         return data;
     }

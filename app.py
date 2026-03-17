@@ -485,45 +485,54 @@ def bootstrap():
 
 @app.route("/api/auth/register", methods=["POST"])
 def register():
-    data = request.get_json(silent=True) or {}
-    email = normalize_email(data.get("email"))
-    password = data.get("password", "")
+    try:
+        data = request.get_json(silent=True) or {}
+        email = normalize_email(data.get("email"))
+        password = data.get("password", "")
 
-    if not email:
-        return jsonify({"error": "Email is required"}), 400
-    if not validate_password(password):
-        return jsonify({"error": "Password must be at least 8 characters"}), 400
-    if User.query.filter_by(email=email).first():
-        return jsonify({"error": "An account with that email already exists"}), 409
+        if not email:
+            return jsonify({"error": "Email is required"}), 400
+        if not validate_password(password):
+            return jsonify({"error": "Password must be at least 8 characters"}), 400
+        if User.query.filter_by(email=email).first():
+            return jsonify({"error": "An account with that email already exists"}), 409
 
-    user = User(email=email, password_hash=generate_password_hash(password))
-    db.session.add(user)
-    db.session.commit()
+        user = User(email=email, password_hash=generate_password_hash(password))
+        db.session.add(user)
+        db.session.commit()
 
-    session.clear()
-    session.permanent = True
-    session["user_id"] = user.id
-    session["csrf_token"] = secrets.token_urlsafe(24)
+        session.clear()
+        session.permanent = True
+        session["user_id"] = user.id
+        session["csrf_token"] = secrets.token_urlsafe(24)
 
-    return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]}), 201
+        return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]}), 201
+    except Exception as exc:
+        db.session.rollback()
+        app.logger.exception("Registration failed")
+        return jsonify({"error": f"Registration failed. Check database setup. {exc}"}), 500
 
 
 @app.route("/api/auth/login", methods=["POST"])
 def login():
-    data = request.get_json(silent=True) or {}
-    email = normalize_email(data.get("email"))
-    password = data.get("password", "")
+    try:
+        data = request.get_json(silent=True) or {}
+        email = normalize_email(data.get("email"))
+        password = data.get("password", "")
 
-    user = User.query.filter_by(email=email).first()
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({"error": "Invalid email or password"}), 401
+        user = User.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.password_hash, password):
+            return jsonify({"error": "Invalid email or password"}), 401
 
-    session.clear()
-    session.permanent = True
-    session["user_id"] = user.id
-    session["csrf_token"] = secrets.token_urlsafe(24)
+        session.clear()
+        session.permanent = True
+        session["user_id"] = user.id
+        session["csrf_token"] = secrets.token_urlsafe(24)
 
-    return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]})
+        return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]})
+    except Exception as exc:
+        app.logger.exception("Login failed")
+        return jsonify({"error": f"Login failed. Check database setup. {exc}"}), 500
 
 
 @app.route("/api/auth/logout", methods=["POST"])
