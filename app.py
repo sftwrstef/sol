@@ -34,7 +34,8 @@ def env_flag(name, default=False):
 def normalize_database_url(url):
     if not url:
         return url
-    url = url.strip().replace("\\n", "").replace("\n", "").replace("\r", "")
+    import re
+    url = re.sub(r'\s+', '', url)  # Remove ALL whitespace (newlines inside URL)
     # Remove pgbouncer param (Prisma-specific, breaks psycopg2)
     url = url.replace("?pgbouncer=true&", "?").replace("&pgbouncer=true", "").replace("?pgbouncer=true", "")
     if url.startswith("postgres://"):
