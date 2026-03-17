@@ -7,6 +7,7 @@ import random
 import secrets
 import subprocess
 import tempfile
+import time
 import zipfile
 from datetime import datetime, timedelta
 from functools import wraps
@@ -268,13 +269,20 @@ def _init_db():
         app.logger.warning("DB init skipped: %s", exc)
 
 
+def ensure_schema_fresh(force=False):
+    last_checked = getattr(app, "_schema_checked_at", 0)
+    if not force and (time.time() - last_checked) < 30:
+        return
+    _init_db()
+    app._schema_checked_at = time.time()
+
+
 if os.environ.get("VERCEL"):
     # Vercel serverless: init DB lazily on first request
     @app.before_request
     def _ensure_db():
-        if not getattr(app, "_db_ready", False):
-            _init_db()
-            app._db_ready = True
+        ensure_schema_fresh()
+        app._db_ready = True
 else:
     # Local development: init immediately
     with app.app_context():
@@ -291,6 +299,7 @@ def get_csrf_token():
 
 @app.before_request
 def load_current_user():
+    ensure_schema_fresh()
     user_id = session.get("user_id")
     g.current_user = User.query.get(user_id) if user_id else None
     g.csrf_token = get_csrf_token()
