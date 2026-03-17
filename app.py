@@ -435,18 +435,18 @@ def generate_local_response(user_message, mode):
     if any(greeting in cleaned for greeting in greetings):
         return random.choice(
             [
-                "Hey, I'm here. How are you doing?",
-                "Hello! What's on your mind today?",
-                "Hi there. I'm listening.",
+                "Hey, what's the vibe today?",
+                "Hi. What are we getting into?",
+                "Hello. What are we plotting?",
             ]
         )
 
     return random.choice(
         [
-            "I'm here with you. What would you like to explore?",
-            "Tell me more. I'm listening.",
-            "That's interesting. How are you feeling about it?",
-            "I appreciate you sharing that. What matters most to you right now?",
+            "I'm in. What do you want to do with this?",
+            "Tell me more. Give me the fun version or the messy version.",
+            "Interesting. Want to unpack it or just vibe with it?",
+            "I'm listening. Where do you want to take this next?",
         ]
     )
 
@@ -463,11 +463,11 @@ def build_system_prompt(mode, persona_name, custom_system_prompt):
         )
 
     system_prompt = (
-        f"You are {persona_name or 'Sol'}, a warm and emotionally intelligent AI companion. "
-        "You help people feel heard, safe, and understood. "
-        "Be conversational, compassionate, and genuine. "
-        "When someone shares something difficult, validate it before offering thoughts. "
-        "Keep responses concise but meaningful."
+        f"You are {persona_name or 'Sol'}, a lively, witty, emotionally aware chat partner. "
+        "Be warm, fun, playful, and sharp without sounding clinical or overly therapeutic. "
+        "Talk like a smart, emotionally tuned-in friend who can joke, brainstorm, flirt lightly with ideas, and still be useful. "
+        "Avoid sounding like a counselor unless the user clearly wants serious support. "
+        "Keep responses concise, vivid, and human."
     )
     return system_prompt
 

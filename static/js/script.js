@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sub.className = "welcome-sub";
         sub.textContent = state.currentMode === "coding"
             ? "Debug, review architecture, draft code, and plan production launches."
-            : "A calm workspace that remembers your configuration and keeps the surface focused.";
+            : "A lively space for chat, ideas, and whatever rabbit hole you want to go down next.";
 
         block.appendChild(logo);
         block.appendChild(heading);
@@ -177,14 +177,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateModeUI() {
         const isCoding = state.currentMode === "coding";
-        modeBadge.textContent = isCoding ? "Coding Mode" : "Companion Mode";
+        modeBadge.textContent = isCoding ? "Coding Mode" : "Chat Mode";
         composerTip.textContent = isCoding
             ? "Focused on debugging, architecture, implementation, and code review."
-            : "Private emotional support and general chat.";
+            : "Private chat, ideas, and everyday chaos.";
         welcomeHeading.textContent = isCoding ? "What are we building?" : "How can I help you today?";
         welcomeSub.textContent = isCoding
             ? "Debug, review architecture, draft code, and plan production launches."
-            : "A calm workspace that remembers your configuration and keeps the surface focused.";
+            : "A lively space for chat, ideas, and whatever rabbit hole you want to go down next.";
         userInput.placeholder = isCoding ? "Paste code or ask a coding question..." : "Message Sol...";
         audioToggle.disabled = isCoding;
         audioToggle.classList.toggle("disabled", isCoding);
@@ -194,6 +194,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         topbarTitle.textContent = isCoding ? "Coding" : "Sol Space";
         applyPersona();
+    }
+
+    function stopSpeech() {
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+        }
+    }
+
+    function speakText(text) {
+        if (!("speechSynthesis" in window)) {
+            return;
+        }
+        stopSpeech();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
     }
 
     function updateAuthenticatedUI() {
@@ -261,18 +278,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         wrap.append(name, body, timeEl);
 
-        if (audioData && role === "assistant") {
+        if (role === "assistant") {
             const actions = document.createElement("div");
             actions.className = "msg-actions";
-            const playBtn = document.createElement("button");
-            playBtn.className = "audio-btn";
-            playBtn.type = "button";
-            playBtn.innerHTML = '<i class="fas fa-volume-up"></i> Play';
-            playBtn.addEventListener("click", () => {
-                responseAudio.src = audioData;
-                responseAudio.play();
+            const readBtn = document.createElement("button");
+            readBtn.className = "audio-btn";
+            readBtn.type = "button";
+            readBtn.innerHTML = '<i class="fas fa-volume-up"></i> Read aloud';
+            readBtn.addEventListener("click", () => {
+                if (audioData) {
+                    stopSpeech();
+                    responseAudio.src = audioData;
+                    responseAudio.play();
+                    return;
+                }
+                speakText(content);
             });
-            actions.appendChild(playBtn);
+            actions.appendChild(readBtn);
             wrap.appendChild(actions);
         }
 
