@@ -631,30 +631,33 @@ def speech_to_text(audio_data):
                     pass
 
 
-def generate_local_response(user_message, mode):
+def generate_local_response(user_message, mode, persona_name=None):
     if mode == "coding":
         return (
-            "I can help with architecture, debugging, and code changes. "
-            "Ask a concrete coding question or paste code and I will work through it step by step."
+            f"{persona_name or 'Sol Code'} local fallback is on right now, so keep it concrete. "
+            "Paste the code, the error, or the behavior you want changed and I will stay focused on the implementation."
         )
 
-    cleaned = user_message.lower()
-    greetings = ["hi", "hello", "hey", "greetings"]
-    if any(greeting in cleaned for greeting in greetings):
+    cleaned = " ".join((user_message or "").strip().split())
+    lower_cleaned = cleaned.lower()
+    short_topic = cleaned[:120] if cleaned else "that"
+
+    greetings = ("hi", "hello", "hey", "yo", "sup")
+    if any(lower_cleaned.startswith(greeting) for greeting in greetings):
         return random.choice(
             [
-                "Hey, what's the vibe today?",
-                "Hi. What are we getting into?",
-                "Hello. What are we plotting?",
+                f"Hey. Sol fallback is holding the line for a second, but I'm here. What's the move?",
+                f"Hi. I'm in lightweight mode right now, but I still caught you. What's going on?",
+                f"Hey you. Quick fallback mode, same Sol energy. What's the headline?",
             ]
         )
 
     return random.choice(
         [
-            "I'm in. What do you want to do with this?",
-            "Tell me more. Give me the fun version or the messy version.",
-            "Interesting. Want to unpack it or just vibe with it?",
-            "I'm listening. Where do you want to take this next?",
+            f"I caught the part about {short_topic}. Keep going and give me the next piece.",
+            f"Still here, just in fallback mode for a second. Stay with {short_topic} and tell me what you want from me.",
+            f"I've got the thread: {short_topic}. Do you want a take, a plan, or just someone to riff with?",
+            f"Not fully on the main model right now, but I'm with you. Keep pulling on {short_topic}.",
         ]
     )
 
@@ -1174,7 +1177,7 @@ def chat():
     reply = create_model_response(messages, model_choice)
     local_mode = not bool(reply)
     if not reply:
-        reply = generate_local_response(user_input, mode)
+        reply = generate_local_response(user_input, mode, persona_name)
 
     if conversation.title == "New Chat":
         prefix = "Code: " if mode == "coding" else ""

@@ -19,7 +19,7 @@
     --danger: #ff6b6b;
     --warning: rgba(255, 214, 102, 0.16);
     --radius: 16px;
-    --sidebar-w: clamp(292px, 24vw, 344px);
+    --sidebar-w: clamp(320px, 26vw, 376px);
     --content-w: 940px;
     --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
 }
@@ -161,6 +161,26 @@ button, input, textarea, select {
     border-color: rgba(188, 140, 255, 0.4);
 }
 
+.model-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, rgba(246, 247, 251, 0.82) 50%),
+        linear-gradient(135deg, rgba(246, 247, 251, 0.82) 50%, transparent 50%);
+    background-position:
+        calc(100% - 20px) calc(50% - 2px),
+        calc(100% - 14px) calc(50% - 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 38px;
+}
+
+.model-select option,
+.model-select optgroup {
+    background: #f5f1ff;
+    color: #161125;
+}
+
 .auth-hint,
 .setting-hint,
 .privacy-note,
@@ -221,7 +241,7 @@ button, input, textarea, select {
 }
 
 .sidebar-panel {
-    padding: 0 12px 12px;
+    padding: 0 14px 14px;
     min-height: 0;
 }
 
@@ -388,12 +408,13 @@ button, input, textarea, select {
     justify-content: space-between;
     gap: 10px;
     cursor: pointer;
+    padding: 12px;
 }
 
 .conv-title-wrap {
     min-width: 0;
     display: grid;
-    gap: 6px;
+    gap: 4px;
 }
 
 .conv-item-meta {
@@ -405,17 +426,17 @@ button, input, textarea, select {
 .conv-tag {
     display: inline-flex;
     align-items: center;
-    padding: 4px 8px;
+    padding: 3px 8px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-dim);
-    font-size: 0.72rem;
+    font-size: 0.69rem;
 }
 
 .conv-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     flex-shrink: 0;
 }
 
@@ -453,6 +474,7 @@ button, input, textarea, select {
     display: grid;
     gap: 12px;
     margin-top: auto;
+    background: linear-gradient(180deg, rgba(6, 9, 16, 0.32), rgba(6, 9, 16, 0.92));
 }
 
 .main {
