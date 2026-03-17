@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    function addMessage(content, role, timestamp, audioData) {
+    function addMessage(content, role, timestamp, audioData, memorySuggestion = null) {
         document.getElementById("welcomeBlock")?.remove();
 
         const row = document.createElement("div");
@@ -345,6 +345,35 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             actions.appendChild(readBtn);
             wrap.appendChild(actions);
+
+            if (memorySuggestion?.title && memorySuggestion?.content) {
+                const suggestion = document.createElement("div");
+                suggestion.className = "memory-suggestion";
+                suggestion.innerHTML = `
+                    <div class="memory-suggestion-copy">
+                        <strong>Suggested memory</strong>
+                        <span>${memorySuggestion.title}: ${memorySuggestion.content}</span>
+                    </div>
+                `;
+                const saveButton = document.createElement("button");
+                saveButton.className = "audio-btn";
+                saveButton.type = "button";
+                saveButton.textContent = "Save";
+                saveButton.addEventListener("click", async () => {
+                    await apiFetch("/api/memories", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            title: memorySuggestion.title,
+                            content: memorySuggestion.content,
+                        }),
+                    });
+                    await loadMemories();
+                    saveButton.disabled = true;
+                    saveButton.textContent = "Saved";
+                });
+                suggestion.appendChild(saveButton);
+                wrap.appendChild(suggestion);
+            }
         }
 
         inner.append(avatar, wrap);
@@ -591,7 +620,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 topbarTitle.textContent = data.conversation_title;
                 await loadConversations();
             }
-            addMessage(data.message, "assistant", data.timestamp, data.audio || null);
+            addMessage(data.message, "assistant", data.timestamp, data.audio || null, data.memory_suggestion || null);
             apiNotice.classList.toggle("hidden", !data.local_mode);
             if (data.audio && state.enableVoiceOutput) {
                 responseAudio.src = data.audio;

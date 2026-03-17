@@ -490,6 +490,79 @@ def build_memory_context(user_id, limit=8):
     return "Saved user memory:\n" + "\n".join(lines)
 
 
+def build_profile_context(user):
+    if not user:
+        return ""
+
+    lines = []
+    if (user.display_name or "").strip():
+        lines.append(f"- Name: {user.display_name.strip()}")
+    if (user.about_me or "").strip():
+        lines.append(f"- About me: {user.about_me.strip()}")
+
+    if not lines:
+        return ""
+
+    return "User profile:\n" + "\n".join(lines)
+
+
+def maybe_suggest_memory(user, user_message, assistant_reply, model_choice):
+    if not user_message or not assistant_reply:
+        return None
+
+    profile = build_profile_context(user)
+    memory_context = build_memory_context(user.id, limit=12)
+    extraction_prompt = (
+        "You identify durable user memories worth saving across chats. "
+        "Only suggest a memory if it is a stable preference, identity detail, important relationship/context, ongoing project, or recurring constraint. "
+        "Do not suggest temporary moods or one-off facts. "
+        "Return strict JSON only with keys save, title, content. "
+        "Example: {\"save\": true, \"title\": \"Preferred tone\", \"content\": \"Likes playful, direct replies instead of therapeutic language.\"}"
+    )
+    extraction_input = (
+        f"{profile}\n\n{memory_context}\n\n"
+        f"Latest user message:\n{user_message}\n\n"
+        f"Assistant reply:\n{assistant_reply}\n\n"
+        "If nothing should be saved, return {\"save\": false, \"title\": \"\", \"content\": \"\"}."
+    ).strip()
+
+    raw = create_model_response(
+        [
+            {"role": "system", "content": extraction_prompt},
+            {"role": "user", "content": extraction_input},
+        ],
+        model_choice,
+    )
+
+    if not raw:
+        return None
+
+    raw = raw.strip()
+    if "```" in raw:
+        raw = raw.replace("```json", "").replace("```", "").strip()
+
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+
+    if not parsed.get("save"):
+        return None
+
+    title = (parsed.get("title") or "").strip()[:120]
+    content = (parsed.get("content") or "").strip()
+    if not title or not content:
+        return None
+
+    existing = Memory.query.filter_by(user_id=user.id).all()
+    normalized_content = content.lower()
+    for memory in existing:
+        if normalized_content == (memory.content or "").strip().lower():
+            return None
+
+    return {"title": title, "content": content}
+
+
 def text_to_speech(text):
     try:
         from gtts import gTTS
@@ -1081,6 +1154,9 @@ def chat():
     history = get_chat_history(conversation.id)
     history.append({"role": "user", "content": user_input})
     system_prompt = build_system_prompt(mode, persona_name, custom_system_prompt)
+    profile_context = build_profile_context(g.current_user)
+    if profile_context:
+        system_prompt = f"{system_prompt}\n\n{profile_context}\nUse this profile context when relevant."
     memory_context = build_memory_context(g.current_user.id)
     if memory_context:
         system_prompt = f"{system_prompt}\n\n{memory_context}\nUse these memories when relevant, but do not mention them unless it helps."
@@ -1101,6 +1177,13 @@ def chat():
     save_message("user", user_input, None, conversation.id)
     save_message("assistant", reply, None, conversation.id)
 
+    memory_suggestion = None
+    if mode == "companion" and not local_mode:
+        try:
+            memory_suggestion = maybe_suggest_memory(g.current_user, user_input, reply, model_choice)
+        except Exception as exc:
+            app.logger.warning("Memory suggestion failed: %s", exc)
+
     audio_data = text_to_speech(reply) if mode == "companion" else None
     result = {
         "message": reply,
@@ -1111,6 +1194,8 @@ def chat():
         "conversation_mode": conversation.mode,
         "project_id": conversation.project_id,
     }
+    if memory_suggestion:
+        result["memory_suggestion"] = memory_suggestion
     if audio_data:
         result["audio"] = f"data:audio/mp3;base64,{audio_data}"
     return jsonify(result)

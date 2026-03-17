@@ -681,6 +681,34 @@ button, input, textarea, select {
     margin-top: 10px;
 }
 
+.memory-suggestion {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid rgba(188, 140, 255, 0.24);
+    border-radius: 14px;
+    background: rgba(140, 91, 255, 0.08);
+}
+
+.memory-suggestion-copy {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.memory-suggestion-copy strong {
+    font-size: 0.82rem;
+}
+
+.memory-suggestion-copy span {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
 .typing-dots {
     display: inline-flex;
     gap: 6px;
@@ -1059,6 +1087,11 @@ button, input, textarea, select {
     .conv-item {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .memory-suggestion {
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .conv-actions {
