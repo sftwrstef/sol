@@ -5,29 +5,34 @@
 }
 
 :root {
-    --bg: #111318;
-    --bg-2: #171a21;
-    --sidebar: #0d1016;
-    --surface: #1d2330;
-    --surface-2: #252d3c;
-    --border: rgba(255, 255, 255, 0.08);
-    --text: #f3f5f7;
-    --text-dim: #9aa4b2;
-    --accent: #63c5a7;
-    --accent-2: #8bd7ff;
-    --danger: #ff6b6b;
-    --warning: rgba(255, 214, 102, 0.16);
+    --bg: #0a0a12;
+    --bg-2: #10101c;
+    --sidebar: #080810;
+    --surface: #15152a;
+    --surface-2: #1c1c38;
+    --border: rgba(160, 120, 255, 0.1);
+    --border-bright: rgba(160, 120, 255, 0.25);
+    --text: #eeedf5;
+    --text-dim: #8b87a8;
+    --accent: #9b6dff;
+    --accent-2: #c084fc;
+    --accent-3: #7c3aed;
+    --glow: rgba(139, 92, 246, 0.35);
+    --glow-warm: rgba(192, 132, 252, 0.2);
+    --danger: #ff6b8a;
+    --warning: rgba(255, 214, 102, 0.14);
     --radius: 14px;
-    --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
     --sidebar-w: 300px;
 }
 
 html, body {
     height: 100%;
     background:
-        radial-gradient(circle at top left, rgba(99, 197, 167, 0.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(139, 215, 255, 0.18), transparent 25%),
-        linear-gradient(180deg, #0d1016, #111318 55%, #151923);
+        radial-gradient(ellipse at 20% 0%, rgba(139, 92, 246, 0.15), transparent 50%),
+        radial-gradient(ellipse at 80% 0%, rgba(192, 132, 252, 0.1), transparent 45%),
+        radial-gradient(ellipse at 50% 100%, rgba(88, 28, 235, 0.08), transparent 55%),
+        linear-gradient(180deg, #08080f, #0a0a14 40%, #0c0c18);
     color: var(--text);
     font-family: "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -45,45 +50,73 @@ button, input, textarea, select {
     display: none !important;
 }
 
+/* ---- Auth Screen ---- */
 .auth-shell {
     min-height: 100dvh;
     display: grid;
     place-items: center;
     padding: 24px;
+    position: relative;
+}
+
+.auth-shell::before {
+    content: "";
+    position: fixed;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.12), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .auth-card {
+    position: relative;
+    z-index: 1;
     width: min(460px, 100%);
-    background: rgba(12, 16, 22, 0.88);
-    border: 1px solid var(--border);
+    background: rgba(12, 12, 22, 0.85);
+    border: 1px solid var(--border-bright);
     border-radius: 24px;
-    box-shadow: var(--shadow);
-    padding: 32px;
-    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow), 0 0 80px rgba(139, 92, 246, 0.08);
+    padding: 36px 32px;
+    backdrop-filter: blur(24px);
+    animation: authFadeIn 0.5s ease-out;
+}
+
+@keyframes authFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .auth-brand {
     display: inline-flex;
-    padding: 8px 12px;
+    padding: 8px 14px;
     border-radius: 999px;
-    background: rgba(99, 197, 167, 0.12);
-    color: var(--accent);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(192, 132, 252, 0.12));
+    color: var(--accent-2);
     font-size: 0.82rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .auth-title {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    line-height: 1.05;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    line-height: 1.1;
     margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .auth-subtitle {
     color: var(--text-dim);
-    line-height: 1.6;
-    margin-bottom: 22px;
+    line-height: 1.65;
+    margin-bottom: 24px;
 }
 
 .auth-tabs {
@@ -97,20 +130,27 @@ button, input, textarea, select {
     border: 1px solid var(--border);
     background: transparent;
     color: var(--text-dim);
-    padding: 10px 14px;
+    padding: 11px 14px;
     border-radius: 12px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.auth-tab:hover {
+    border-color: var(--border-bright);
+    color: var(--text);
 }
 
 .auth-tab.active {
-    background: linear-gradient(135deg, rgba(99, 197, 167, 0.18), rgba(139, 215, 255, 0.18));
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.15));
     color: var(--text);
-    border-color: rgba(139, 215, 255, 0.35);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.08);
 }
 
 .auth-form {
     display: grid;
-    gap: 12px;
+    gap: 14px;
 }
 
 .auth-label {
@@ -126,10 +166,12 @@ button, input, textarea, select {
     border-radius: 12px;
     padding: 13px 14px;
     outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .auth-input:focus {
-    border-color: rgba(139, 215, 255, 0.45);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .auth-hint {
@@ -140,7 +182,7 @@ button, input, textarea, select {
 
 .auth-error {
     min-height: 20px;
-    color: #ffb0b0;
+    color: #ffb0c0;
     font-size: 0.9rem;
 }
 
@@ -148,13 +190,23 @@ button, input, textarea, select {
     margin-top: 6px;
     border: none;
     border-radius: 12px;
-    padding: 13px 16px;
+    padding: 14px 16px;
     cursor: pointer;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #081019;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent), var(--accent-2));
+    background-size: 200% 100%;
+    color: #fff;
     font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background-position 0.4s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25);
 }
 
+.auth-submit:hover {
+    background-position: 100% 0;
+    box-shadow: 0 6px 30px rgba(139, 92, 246, 0.35);
+}
+
+/* ---- Layout ---- */
 .layout {
     display: flex;
     height: 100dvh;
@@ -163,7 +215,7 @@ button, input, textarea, select {
 
 .sidebar {
     width: var(--sidebar-w);
-    background: rgba(9, 11, 16, 0.94);
+    background: rgba(8, 8, 14, 0.96);
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -188,7 +240,7 @@ button, input, textarea, select {
     padding: 12px;
     border: 1px solid var(--border);
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(139, 92, 246, 0.04);
 }
 
 .account-copy {
@@ -217,6 +269,12 @@ button, input, textarea, select {
     padding: 10px 12px;
     cursor: pointer;
     white-space: nowrap;
+    transition: border-color 0.2s ease;
+}
+
+.account-logout:hover {
+    border-color: var(--danger);
+    color: var(--danger);
 }
 
 .mode-switch {
@@ -232,12 +290,19 @@ button, input, textarea, select {
     border-radius: 12px;
     padding: 10px 12px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+    border-color: var(--border-bright);
+    color: var(--text);
 }
 
 .mode-btn.active {
-    background: rgba(99, 197, 167, 0.12);
-    border-color: rgba(99, 197, 167, 0.35);
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.35);
     color: var(--text);
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.06);
 }
 
 .new-chat-btn {
@@ -248,10 +313,16 @@ button, input, textarea, select {
     gap: 10px;
     padding: 12px 14px;
     border-radius: 14px;
-    border: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(99, 197, 167, 0.16), rgba(139, 215, 255, 0.12));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.14), rgba(192, 132, 252, 0.08));
     color: var(--text);
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.new-chat-btn:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.08);
 }
 
 .sidebar-section-label {
@@ -282,7 +353,7 @@ button, input, textarea, select {
 
 .conv-item:hover,
 .conv-item.active {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(139, 92, 246, 0.08);
     color: var(--text);
 }
 
@@ -320,17 +391,19 @@ button, input, textarea, select {
 .setting-textarea {
     width: 100%;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     color: var(--text);
     border-radius: 12px;
     padding: 11px 12px;
     outline: none;
+    transition: border-color 0.2s ease;
 }
 
 .model-select:focus,
 .setting-input:focus,
 .setting-textarea:focus {
-    border-color: rgba(139, 215, 255, 0.4);
+    border-color: rgba(139, 92, 246, 0.45);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.08);
 }
 
 .toggle-row {
@@ -346,11 +419,12 @@ button, input, textarea, select {
     border-radius: 10px;
     padding: 10px 0;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .tog-btn.active {
-    background: rgba(99, 197, 167, 0.12);
-    border-color: rgba(99, 197, 167, 0.3);
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.3);
     color: var(--accent);
 }
 
@@ -369,10 +443,11 @@ button, input, textarea, select {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 1;
 }
 
+/* ---- Main Area ---- */
 .main {
     flex: 1;
     min-width: 0;
@@ -386,7 +461,7 @@ button, input, textarea, select {
     justify-content: space-between;
     padding: 14px 16px;
     border-bottom: 1px solid var(--border);
-    background: rgba(17, 19, 24, 0.85);
+    background: rgba(10, 10, 18, 0.85);
     backdrop-filter: blur(14px);
 }
 
@@ -397,6 +472,7 @@ button, input, textarea, select {
     border-radius: 10px;
     background: transparent;
     color: var(--text);
+    cursor: pointer;
 }
 
 .topbar-title {
@@ -424,18 +500,30 @@ button, input, textarea, select {
 }
 
 .welcome-logo {
-    width: 68px;
-    height: 68px;
-    border-radius: 24px;
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
     display: grid;
     place-items: center;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #091018;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent), var(--accent-2));
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+    animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+    0%, 100% { box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3); }
+    50% { box-shadow: 0 8px 48px rgba(139, 92, 246, 0.45); }
 }
 
 .welcome-heading {
     font-size: clamp(1.8rem, 4vw, 2.6rem);
+    background: linear-gradient(135deg, #fff 40%, var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .welcome-sub {
@@ -444,6 +532,7 @@ button, input, textarea, select {
     line-height: 1.7;
 }
 
+/* ---- Messages ---- */
 .msg-row,
 .typing-row {
     display: flex;
@@ -473,7 +562,8 @@ button, input, textarea, select {
 
 .msg-row.assistant .msg-avatar,
 .typing-inner .msg-avatar {
-    background: linear-gradient(135deg, rgba(99, 197, 167, 0.22), rgba(139, 215, 255, 0.22));
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(192, 132, 252, 0.2));
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.1);
 }
 
 .msg-content-wrap {
@@ -488,7 +578,7 @@ button, input, textarea, select {
 }
 
 .msg-content {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 14px 16px;
@@ -496,17 +586,23 @@ button, input, textarea, select {
     overflow-wrap: anywhere;
 }
 
+.msg-row.assistant .msg-content {
+    border-color: rgba(139, 92, 246, 0.12);
+    background: rgba(139, 92, 246, 0.04);
+}
+
 .msg-content code {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(139, 92, 246, 0.12);
     border-radius: 8px;
     padding: 0.15em 0.45em;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.92em;
+    color: var(--accent-2);
 }
 
 .msg-content pre {
-    background: rgba(6, 10, 16, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(6, 6, 14, 0.9);
+    border: 1px solid rgba(139, 92, 246, 0.1);
     border-radius: 14px;
     padding: 14px;
     overflow-x: auto;
@@ -516,6 +612,7 @@ button, input, textarea, select {
 .msg-content pre code {
     background: none;
     padding: 0;
+    color: var(--text);
 }
 
 .msg-time {
@@ -540,15 +637,21 @@ button, input, textarea, select {
     border-radius: 10px;
     padding: 8px 10px;
     cursor: pointer;
+    transition: border-color 0.2s ease;
 }
 
+.audio-btn:hover {
+    border-color: var(--accent);
+}
+
+/* ---- Typing Indicator ---- */
 .typing-dots {
     display: inline-flex;
     gap: 6px;
     padding: 16px 18px;
     border-radius: 16px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(139, 92, 246, 0.06);
     align-self: center;
 }
 
@@ -556,7 +659,7 @@ button, input, textarea, select {
     width: 7px;
     height: 7px;
     border-radius: 999px;
-    background: var(--accent-2);
+    background: var(--accent);
     opacity: 0.45;
     animation: pulse 1s infinite ease-in-out;
 }
@@ -574,10 +677,11 @@ button, input, textarea, select {
     40% { transform: scale(1.1); opacity: 1; }
 }
 
+/* ---- Input Area ---- */
 .input-wrap {
     padding: 14px 18px calc(16px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--border);
-    background: rgba(13, 16, 22, 0.85);
+    background: rgba(8, 8, 14, 0.88);
     backdrop-filter: blur(16px);
 }
 
@@ -605,8 +709,8 @@ button, input, textarea, select {
     justify-content: space-between;
     padding: 10px 12px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 107, 107, 0.3);
-    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid rgba(255, 107, 138, 0.3);
+    background: rgba(255, 107, 138, 0.1);
 }
 
 .recording-bar.active {
@@ -618,7 +722,13 @@ button, input, textarea, select {
     height: 10px;
     border-radius: 50%;
     background: var(--danger);
-    box-shadow: 0 0 0 8px rgba(255, 107, 107, 0.16);
+    box-shadow: 0 0 0 8px rgba(255, 107, 138, 0.14);
+    animation: recPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes recPulse {
+    0%, 100% { box-shadow: 0 0 0 6px rgba(255, 107, 138, 0.14); }
+    50% { box-shadow: 0 0 0 12px rgba(255, 107, 138, 0.06); }
 }
 
 .rec-stop {
@@ -641,8 +751,9 @@ button, input, textarea, select {
     display: inline-flex;
     padding: 7px 10px;
     border-radius: 999px;
-    background: rgba(99, 197, 167, 0.12);
+    background: rgba(139, 92, 246, 0.12);
     color: var(--accent);
+    border: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .input-box {
@@ -652,9 +763,15 @@ button, input, textarea, select {
     gap: 10px;
     align-items: flex-end;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 20px;
     padding: 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-box:focus-within {
+    border-color: rgba(139, 92, 246, 0.35);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.06);
 }
 
 .input-icon-btn,
@@ -665,6 +782,7 @@ button, input, textarea, select {
     border-radius: 14px;
     cursor: pointer;
     flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
 .input-icon-btn {
@@ -672,14 +790,23 @@ button, input, textarea, select {
     color: var(--text);
 }
 
+.input-icon-btn:hover {
+    background: rgba(139, 92, 246, 0.12);
+}
+
 .input-icon-btn.recording {
-    background: rgba(255, 107, 107, 0.22);
+    background: rgba(255, 107, 138, 0.22);
     color: #ffd3d3;
 }
 
 .send-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #071018;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent));
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+}
+
+.send-btn:hover {
+    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.35);
 }
 
 .msg-textarea {
@@ -702,15 +829,17 @@ button, input, textarea, select {
     line-height: 1.5;
 }
 
+/* ---- Modal ---- */
 .modal-overlay {
     position: fixed;
     inset: 0;
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(5, 8, 14, 0.74);
+    background: rgba(5, 5, 12, 0.78);
     padding: 20px;
     z-index: 5;
+    backdrop-filter: blur(6px);
 }
 
 .modal-overlay.open {
@@ -720,9 +849,15 @@ button, input, textarea, select {
 .modal-panel {
     width: min(640px, 100%);
     border-radius: 24px;
-    border: 1px solid var(--border);
-    background: #11141b;
-    box-shadow: var(--shadow);
+    border: 1px solid var(--border-bright);
+    background: #0e0e1a;
+    box-shadow: var(--shadow), 0 0 60px rgba(139, 92, 246, 0.06);
+    animation: modalIn 0.25s ease-out;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .modal-header,
@@ -752,6 +887,7 @@ button, input, textarea, select {
     border-radius: 12px;
     padding: 10px 14px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .modal-close,
@@ -760,10 +896,20 @@ button, input, textarea, select {
     color: var(--text);
 }
 
+.modal-close:hover,
+.modal-reset:hover {
+    border-color: var(--border-bright);
+}
+
 .modal-save {
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #081019;
+    background: linear-gradient(135deg, var(--accent-3), var(--accent));
+    color: #fff;
     border: none;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+}
+
+.modal-save:hover {
+    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.3);
 }
 
 .modal-body {
@@ -804,15 +950,40 @@ button, input, textarea, select {
     background: rgba(255, 255, 255, 0.03);
     color: var(--text);
     border-radius: 999px;
-    padding: 9px 12px;
+    padding: 9px 14px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+    border-color: var(--border-bright);
 }
 
 .preset-btn.selected {
-    background: rgba(99, 197, 167, 0.12);
-    border-color: rgba(99, 197, 167, 0.35);
+    background: rgba(139, 92, 246, 0.14);
+    border-color: rgba(139, 92, 246, 0.35);
+    color: var(--accent-2);
 }
 
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.35);
+}
+
+/* ---- Responsive ---- */
 @media (max-width: 900px) {
     .sidebar {
         position: fixed;
