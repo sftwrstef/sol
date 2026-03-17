@@ -144,9 +144,26 @@ def migrate_database():
     db.session.commit()
 
 
-with app.app_context():
-    db.create_all()
-    migrate_database()
+def _init_db():
+    """Create tables and run migrations."""
+    try:
+        db.create_all()
+        migrate_database()
+    except Exception as exc:
+        app.logger.warning("DB init skipped: %s", exc)
+
+
+if os.environ.get("VERCEL"):
+    # Vercel serverless: init DB lazily on first request
+    @app.before_request
+    def _ensure_db():
+        if not getattr(app, "_db_ready", False):
+            _init_db()
+            app._db_ready = True
+else:
+    # Local development: init immediately
+    with app.app_context():
+        _init_db()
 
 
 def get_csrf_token():

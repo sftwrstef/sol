@@ -2,7 +2,7 @@
 name = "sol-space"
 version = "0.1.0"
 description = "Flask chat app for Vercel + Supabase"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.11"
 dependencies = [
     "email-validator==2.3.0",
     "flask==3.1.2",
