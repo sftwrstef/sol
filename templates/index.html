@@ -61,19 +61,10 @@
         </div>
 
         <section class="sidebar-panel">
-            <button class="current-project-chip" id="currentProjectChip" type="button">All chats</button>
             <div class="sidebar-panel-header">
                 <span class="sidebar-section-label">Recent</span>
             </div>
             <div class="conv-list" id="convList"></div>
-        </section>
-
-        <section class="sidebar-panel compact-panel">
-            <div class="sidebar-panel-header">
-                <span class="sidebar-section-label">Projects</span>
-                <button class="panel-action-btn" id="newProjectBtn" type="button">Add</button>
-            </div>
-            <div class="project-list" id="projectList"></div>
         </section>
 
         <div class="sidebar-bottom">
@@ -233,30 +224,6 @@
         <div class="modal-footer">
             <button class="modal-reset" id="settingsReset" type="button">Reset to default</button>
             <button class="modal-save" id="settingsSave" type="button">Save</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="projectModal">
-    <div class="modal-panel">
-        <div class="modal-header">
-            <span class="modal-title"><i class="fas fa-folder-open"></i> Project</span>
-            <button class="modal-close" id="projectClose" type="button"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="setting-group">
-                <label class="setting-label" for="projectName">Name</label>
-                <input type="text" id="projectName" class="setting-input" maxlength="120" placeholder="Launch plan">
-            </div>
-            <div class="setting-group">
-                <label class="setting-label" for="projectDescription">Description</label>
-                <textarea id="projectDescription" class="setting-textarea" rows="5" placeholder="Optional context for grouping related chats."></textarea>
-            </div>
-            <p class="auth-error" id="projectError"></p>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-reset" id="projectDelete" type="button">Delete</button>
-            <button class="modal-save" id="projectSave" type="button">Save project</button>
         </div>
     </div>
 </div>

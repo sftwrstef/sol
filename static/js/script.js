@@ -10,10 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mediaRecorder: null,
         audioChunks: [],
         preferences: {},
-        projects: [],
         memories: [],
-        currentProjectId: null,
-        editingProjectId: null,
         editingMemoryId: null,
     };
 
@@ -35,8 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
     const convList = document.getElementById("convList");
-    const currentProjectChip = document.getElementById("currentProjectChip");
-    const projectList = document.getElementById("projectList");
     const memoryList = document.getElementById("memoryList");
     const memoryHubBtn = document.getElementById("memoryHubBtn");
     const memoryHubModal = document.getElementById("memoryHubModal");
@@ -44,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const topbarTitle = document.getElementById("topbarTitle");
     const newChatBtn = document.getElementById("newChatBtn");
     const newChatBtnMobile = document.getElementById("newChatBtnMobile");
-    const newProjectBtn = document.getElementById("newProjectBtn");
     const newMemoryBtn = document.getElementById("newMemoryBtn");
 
     const modeButtons = document.querySelectorAll(".mode-btn");
@@ -80,14 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const voiceProviderEl = document.getElementById("voiceProvider");
     const voiceNameEl = document.getElementById("voiceName");
     const presetButtons = document.querySelectorAll(".preset-btn");
-
-    const projectModal = document.getElementById("projectModal");
-    const projectClose = document.getElementById("projectClose");
-    const projectSave = document.getElementById("projectSave");
-    const projectDelete = document.getElementById("projectDelete");
-    const projectName = document.getElementById("projectName");
-    const projectDescription = document.getElementById("projectDescription");
-    const projectError = document.getElementById("projectError");
 
     const memoryModal = document.getElementById("memoryModal");
     const memoryClose = document.getElementById("memoryClose");
@@ -205,25 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
         block.appendChild(heading);
         block.appendChild(sub);
         return block;
-    }
-
-    function currentProjectName() {
-        if (!state.currentProjectId) {
-            return "All chats";
-        }
-        return state.projects.find((project) => project.id === state.currentProjectId)?.name || "Project";
-    }
-
-    function updateCurrentProjectChip() {
-        currentProjectChip.textContent = state.currentProjectId ? `Project: ${currentProjectName()} · Show all` : "All chats";
-    }
-
-    async function clearProjectFilter() {
-        state.currentProjectId = null;
-        renderProjects();
-        updateCurrentProjectChip();
-        await loadConversations();
-        startNewChat();
     }
 
     function updateModeUI() {
@@ -416,8 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatContainer.innerHTML = "";
         chatContainer.appendChild(createWelcome());
         document.querySelectorAll(".conv-item").forEach((el) => el.classList.remove("active"));
-        topbarTitle.textContent = state.currentMode === "coding" ? `${currentProjectName()} / Coding` : currentProjectName();
-        updateCurrentProjectChip();
+        topbarTitle.textContent = state.currentMode === "coding" ? "Coding" : "Sol Space";
         closeSidebar();
     }
 
@@ -427,7 +393,6 @@ document.addEventListener("DOMContentLoaded", () => {
         item.dataset.id = conversation.id;
         item.classList.toggle("active", conversation.id === state.currentConvId);
         item.dataset.mode = conversation.mode;
-        item.dataset.projectId = conversation.project_id || "";
 
         const title = document.createElement("span");
         title.className = "conv-item-title";
@@ -439,15 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
         modeTag.className = "conv-tag";
         modeTag.textContent = conversation.mode === "coding" ? "Coding" : "Chat";
         meta.appendChild(modeTag);
-        if (conversation.project_id) {
-            const project = state.projects.find((item) => item.id === conversation.project_id);
-            if (project) {
-                const projectTag = document.createElement("span");
-                projectTag.className = "conv-tag";
-                projectTag.textContent = project.name;
-                meta.appendChild(projectTag);
-            }
-        }
 
         const titleWrap = document.createElement("div");
         titleWrap.className = "conv-title-wrap";
@@ -466,90 +422,13 @@ document.addEventListener("DOMContentLoaded", () => {
             await loadConversations();
         });
 
-        const projectAssign = document.createElement("select");
-        projectAssign.className = "conv-project-select";
-        projectAssign.innerHTML = '<option value="">No project</option>';
-        state.projects.forEach((project) => {
-            const option = document.createElement("option");
-            option.value = String(project.id);
-            option.textContent = project.name;
-            option.selected = project.id === conversation.project_id;
-            projectAssign.appendChild(option);
-        });
-        projectAssign.addEventListener("click", (event) => event.stopPropagation());
-        projectAssign.addEventListener("change", async (event) => {
-            await apiFetch(`/api/conversations/${conversation.id}`, {
-                method: "PATCH",
-                body: JSON.stringify({ project_id: event.target.value ? Number(event.target.value) : null }),
-            });
-            await loadConversations();
-        });
-
         const actions = document.createElement("div");
         actions.className = "conv-actions";
-        actions.append(projectAssign, deleteButton);
+        actions.append(deleteButton);
 
         item.append(titleWrap, actions);
         item.addEventListener("click", () => loadConversation(conversation.id, conversation));
         return item;
-    }
-
-    function renderProjectItem(project) {
-        const item = document.createElement("div");
-        item.className = "project-item";
-        item.dataset.id = project.id;
-        item.classList.toggle("active", project.id === state.currentProjectId);
-        const trigger = document.createElement("button");
-        trigger.type = "button";
-        trigger.className = "project-select-btn";
-        trigger.innerHTML = `
-            <span class="project-item-title">${project.name}</span>
-            <span class="project-item-copy">${project.description || "Grouped chats and workstreams."}</span>
-        `;
-        trigger.addEventListener("click", async () => {
-            state.currentProjectId = project.id;
-            renderProjects();
-            await loadConversations();
-            startNewChat();
-        });
-
-        const editButton = document.createElement("button");
-        editButton.type = "button";
-        editButton.className = "project-edit-btn";
-        editButton.innerHTML = '<i class="fas fa-pen"></i>';
-        editButton.addEventListener("click", (event) => {
-            event.stopPropagation();
-            openProjectModal(project);
-        });
-
-        item.append(trigger, editButton);
-        return item;
-    }
-
-    function renderProjects() {
-        projectList.innerHTML = "";
-
-        const allButton = document.createElement("button");
-        allButton.className = "project-item all-projects";
-        allButton.type = "button";
-        allButton.classList.toggle("active", !state.currentProjectId);
-        allButton.innerHTML = `
-            <span class="project-item-title">All chats</span>
-            <span class="project-item-copy">No project filter.</span>
-        `;
-        allButton.addEventListener("click", clearProjectFilter);
-        projectList.appendChild(allButton);
-
-        if (!state.projects.length) {
-            const empty = document.createElement("div");
-            empty.className = "empty-panel-copy";
-            empty.textContent = "No projects yet.";
-            projectList.appendChild(empty);
-            return;
-        }
-
-        state.projects.forEach((project) => projectList.appendChild(renderProjectItem(project)));
-        updateCurrentProjectChip();
     }
 
     function renderMemoryItem(memory) {
@@ -573,14 +452,6 @@ document.addEventListener("DOMContentLoaded", () => {
         conversations.forEach((conversation) => convList.appendChild(renderConversationItem(conversation)));
     }
 
-    async function loadProjects() {
-        if (!state.user) {
-            return;
-        }
-        state.projects = await apiFetch("/api/projects");
-        renderProjects();
-    }
-
     async function loadMemories() {
         if (!state.user) {
             return;
@@ -598,13 +469,10 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadConversation(id, conversationMeta = null) {
         if (conversationMeta) {
             state.currentMode = conversationMeta.mode || "companion";
-            state.currentProjectId = conversationMeta.project_id || null;
             modeButtons.forEach((button) => {
                 button.classList.toggle("active", button.dataset.mode === state.currentMode);
             });
-            renderProjects();
             updateModeUI();
-            updateCurrentProjectChip();
         }
         state.currentConvId = id;
         chatContainer.innerHTML = "";
@@ -637,7 +505,6 @@ document.addEventListener("DOMContentLoaded", () => {
             mode: state.currentMode,
             persona_name: preference.persona_name,
             system_prompt: preference.system_prompt,
-            project_id: state.currentProjectId,
         };
         if (message) payload.message = message;
         if (voiceData) payload.voice_data = voiceData;
@@ -723,12 +590,9 @@ document.addEventListener("DOMContentLoaded", () => {
         state.csrfToken = data.csrf_token || "";
         state.user = data.user;
         state.preferences = data.preferences || {};
-        state.projects = data.projects || [];
         state.memories = data.memories || [];
         updateAuthenticatedUI();
         if (state.user) {
-            renderProjects();
-            updateCurrentProjectChip();
             await loadConversations();
             await loadMemories();
             startNewChat();
@@ -750,10 +614,8 @@ document.addEventListener("DOMContentLoaded", () => {
             state.user = data.user;
             state.csrfToken = data.csrf_token || state.csrfToken;
             state.preferences = {};
-            state.projects = [];
             authForm.reset();
             updateAuthenticatedUI();
-            await loadProjects();
             await loadConversations();
             await loadMemories();
             startNewChat();
@@ -768,16 +630,12 @@ document.addEventListener("DOMContentLoaded", () => {
         state.csrfToken = data.csrf_token || state.csrfToken;
         state.currentConvId = null;
         state.preferences = {};
-        state.projects = [];
         state.memories = [];
-        state.currentProjectId = null;
         convList.innerHTML = "";
-        projectList.innerHTML = "";
         memoryList.innerHTML = "";
         memoryHubBtn.innerHTML = '<i class="fas fa-brain"></i> Memories';
         chatContainer.innerHTML = "";
         chatContainer.appendChild(createWelcome());
-        updateCurrentProjectChip();
         updateAuthenticatedUI();
     }
 
@@ -843,58 +701,6 @@ document.addEventListener("DOMContentLoaded", () => {
         applyPersona();
         startNewChat();
         closeSettings();
-    }
-
-    function openProjectModal(project = null) {
-        state.editingProjectId = project ? project.id : null;
-        projectName.value = project?.name || "";
-        projectDescription.value = project?.description || "";
-        projectError.textContent = "";
-        projectDelete.classList.toggle("hidden", !project);
-        projectModal.classList.add("open");
-    }
-
-    function closeProjectModal() {
-        projectModal.classList.remove("open");
-        state.editingProjectId = null;
-    }
-
-    async function saveProject() {
-        projectError.textContent = "";
-        const payload = {
-            name: projectName.value.trim(),
-            description: projectDescription.value.trim(),
-        };
-        if (!payload.name) {
-            projectError.textContent = "Project name is required.";
-            return;
-        }
-        if (state.editingProjectId) {
-            await apiFetch(`/api/projects/${state.editingProjectId}`, {
-                method: "PATCH",
-                body: JSON.stringify(payload),
-            });
-        } else {
-            await apiFetch("/api/projects", {
-                method: "POST",
-                body: JSON.stringify(payload),
-            });
-        }
-        await loadProjects();
-        await loadConversations();
-        closeProjectModal();
-    }
-
-    async function removeProject() {
-        if (!state.editingProjectId) return;
-        await apiFetch(`/api/projects/${state.editingProjectId}`, { method: "DELETE" });
-        if (state.currentProjectId === state.editingProjectId) {
-            state.currentProjectId = null;
-        }
-        await loadProjects();
-        await loadConversations();
-        startNewChat();
-        closeProjectModal();
     }
 
     async function resetSettings() {
@@ -994,17 +800,11 @@ document.addEventListener("DOMContentLoaded", () => {
     authForm.addEventListener("submit", handleAuthSubmit);
     profileBtn.addEventListener("click", openProfileModal);
     logoutBtn.addEventListener("click", handleLogout);
-    currentProjectChip.addEventListener("click", () => {
-        if (state.currentProjectId) {
-            clearProjectFilter();
-        }
-    });
 
     sidebarToggle.addEventListener("click", openSidebar);
     sidebarOverlay.addEventListener("click", closeSidebar);
     newChatBtn.addEventListener("click", startNewChat);
     newChatBtnMobile.addEventListener("click", startNewChat);
-    newProjectBtn.addEventListener("click", () => openProjectModal());
     newMemoryBtn.addEventListener("click", () => openMemoryModal());
     memoryHubBtn.addEventListener("click", openMemoryHub);
 
@@ -1056,13 +856,6 @@ document.addEventListener("DOMContentLoaded", () => {
             presetButtons.forEach((item) => item.classList.toggle("selected", item === button));
         });
     });
-
-    projectClose.addEventListener("click", closeProjectModal);
-    projectModal.addEventListener("click", (event) => {
-        if (event.target === projectModal) closeProjectModal();
-    });
-    projectSave.addEventListener("click", saveProject);
-    projectDelete.addEventListener("click", removeProject);
 
     profileClose.addEventListener("click", closeProfileModal);
     profileModal.addEventListener("click", (event) => {

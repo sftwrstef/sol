@@ -360,8 +360,7 @@ button, input, textarea, select {
     gap: 10px;
 }
 
-.conv-list,
-.project-list {
+.conv-list {
     display: grid;
     gap: 6px;
     overflow-y: auto;
@@ -373,13 +372,8 @@ button, input, textarea, select {
     min-height: 0;
 }
 
-.project-list {
-    max-height: 124px;
-}
-
 .conv-item,
-.memory-item,
-.project-item {
+.memory-item {
     border: 1px solid transparent;
     background: transparent;
     color: var(--text-dim);
@@ -425,99 +419,17 @@ button, input, textarea, select {
     flex-shrink: 0;
 }
 
-.conv-project-select {
-    max-width: 112px;
-    border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-dim);
-    border-radius: 10px;
-    padding: 6px 8px;
-}
-
-.project-item,
-.project-select-btn {
-    display: grid;
-    gap: 4px;
-    cursor: pointer;
-}
-
 .conv-item:hover,
-.conv-item.active,
-.project-item:hover,
-.project-item.active {
+.conv-item.active {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text);
     border-color: rgba(255, 255, 255, 0.04);
 }
 
-.conv-item-title,
-.project-item-title {
+.conv-item-title {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-}
-
-.project-item-copy {
-    color: var(--text-dim);
-    font-size: 0.78rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.project-item.all-projects {
-    background: rgba(255, 255, 255, 0.025);
-}
-
-.current-project-chip {
-    margin: 0 4px 10px;
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    max-width: 100%;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 0.82rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    cursor: pointer;
-}
-
-.project-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px;
-}
-
-.project-select-btn {
-    flex: 1;
-    min-width: 0;
-    border: none;
-    background: transparent;
-    color: inherit;
-    text-align: left;
-    padding: 2px 4px;
-}
-
-.project-edit-btn {
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-dim);
-    cursor: pointer;
-}
-
-.project-edit-btn:hover {
-    color: var(--text);
-    border-color: rgba(188, 140, 255, 0.35);
 }
 
 .conv-delete {
@@ -1071,9 +983,6 @@ button, input, textarea, select {
         padding-bottom: 20px;
     }
 
-    .project-list {
-        max-height: none;
-    }
 }
 
 @media (max-width: 640px) {
@@ -1151,7 +1060,6 @@ button, input, textarea, select {
         padding-right: 14px;
     }
 
-    .project-list,
     .conv-list {
         max-height: none;
         padding-right: 0;
@@ -1174,11 +1082,6 @@ button, input, textarea, select {
     .conv-actions {
         width: 100%;
         justify-content: space-between;
-    }
-
-    .conv-project-select {
-        max-width: none;
-        flex: 1;
     }
 
     .setting-grid {
