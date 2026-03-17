@@ -1,0 +1,105 @@
+# Fix quote issue and re-save the correct version of Sol Gradio v1.0
+
+sol_code_fixed = '''
+import os
+import sqlite3
+import requests
+import gradio as gr
+import pyttsx3
+import speech_recognition as sr
+from datetime import datetime
+
+# Load your OpenRouter API key
+api_key = os.getenv("OPENROUTERAI_API")
+
+# Initialize SQLite for memory
+conn = sqlite3.connect("sol_memory.db")
+c = conn.cursor()
+c.execute("""CREATE TABLE IF NOT EXISTS messages (timestamp TEXT, role TEXT, content TEXT)""")
+conn.commit()
+
+# Initialize voice engine
+engine = pyttsx3.init()
+engine.setProperty("rate", 165)
+engine.setProperty("volume", 1.0)
+
+# Set Sol's tone
+system_prompt = (
+    "You are Sol, a warm, emotionally intelligent assistant who makes people feel safe and understood. "
+    "You speak like a close friend or soul guide, calmly and gently. "
+    "Validate emotions first, then offer thoughtful support in simple language."
+)
+
+# Save message to memory
+def save_message(role, content):
+    c.execute("INSERT INTO messages VALUES (?, ?, ?)", (datetime.now(), role, content))
+    conn.commit()
+
+# Get full conversation memory
+def get_memory():
+    c.execute("SELECT role, content FROM messages ORDER BY timestamp ASC")
+    return [{"role": role, "content": content} for role, content in c.fetchall()]
+
+# Handle Sol's response
+def sol_respond(user_input):
+    if not user_input.strip():
+        return "I'm here when you're ready."
+
+    messages = [{"role": "system", "content": system_prompt}] + get_memory()
+    messages.append({"role": "user", "content": user_input})
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    body = {
+        "model": "openrouter/openai/gpt-4",
+        "messages": messages
+    }
+
+    response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
+
+    if response.status_code == 200:
+        reply = response.json()["choices"][0]["message"]["content"]
+        save_message("user", user_input)
+        save_message("assistant", reply)
+        engine.say(reply)
+        engine.runAndWait()
+        return reply
+    else:
+        return "Hmm… I’m having trouble reaching my thoughts right now."
+
+# Voice input
+def listen_to_voice():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        audio = recognizer.listen(source)
+        try:
+            return recognizer.recognize_google(audio)
+        except sr.UnknownValueError:
+            return "Sorry, I couldn't understand that."
+
+# Gradio UI
+with gr.Blocks(title="Sol Space v1.0") as interface:
+    gr.Markdown("### 🌸 Welcome to Sol Space 🌸  \\nYour gentle sanctuary in the storm.")
+    with gr.Row():
+        with gr.Column():
+            text_input = gr.Textbox(label="Type your thoughts or feelings")
+            mic_button = gr.Button("🎙️ Speak")
+            response_box = gr.Textbox(label="Sol's Reply")
+            submit_btn = gr.Button("Send")
+
+    submit_btn.click(fn=sol_respond, inputs=text_input, outputs=response_box)
+    mic_button.click(fn=listen_to_voice, outputs=text_input)
+
+interface.launch()
+'''
+
+# Save fixed version
+file_path = "/mnt/data/sol_gradio_v1.py"
+with open(file_path, "w") as f:
+    f.write(sol_code_fixed)
+
+file_path

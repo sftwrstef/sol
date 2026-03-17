@@ -1,0 +1,74 @@
+import os
+import sqlite3
+from datetime import datetime
+import requests
+
+# Load API key from Replit Secrets or environment
+api_key = os.environ.get("OPENROUTERAI_API")
+
+# SQLite setup
+conn = sqlite3.connect("sol_memory.db")
+cursor = conn.cursor()
+cursor.execute("""CREATE TABLE IF NOT EXISTS messages (
+    timestamp TEXT,
+    role TEXT,
+    content TEXT
+)""")
+conn.commit()
+
+# Sol greeting
+def intro_message():
+    return """\n
+    🌸 Welcome to Sol Space 🌸
+    This is your sanctuary — a gentle place to pause and be held.
+    Take all the time you need to settle in...
+    ___________________________________________
+    Chat with Sol
+    (Type your message and press Enter)\n
+    """
+
+# Store message
+def save_message(role, content):
+    cursor.execute("INSERT INTO messages VALUES (?, ?, ?)", (datetime.now(), role, content))
+    conn.commit()
+
+# Retrieve memory
+def get_conversation():
+    cursor.execute("SELECT role, content FROM messages ORDER BY timestamp ASC")
+    history = cursor.fetchall()
+    return [{"role": r, "content": c} for r, c in history]
+
+# Chat with GPT-4 via OpenRouter
+def chat_with_sol(user_input):
+    messages = get_conversation()
+    messages.append({"role": "user", "content": user_input})
+
+    response = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": "openrouter/openai/gpt-4",
+            "messages": messages
+        }
+    )
+
+    if response.status_code == 200:
+        reply = response.json()["choices"][0]["message"]["content"]
+        save_message("user", user_input)
+        save_message("assistant", reply)
+        return reply
+    else:
+        return f"Sol: Hmm… I’m having trouble reaching my thoughts right now. ({response.status_code})"
+
+# Start the chat
+print(intro_message())
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ["exit", "quit"]:
+        print("Sol: I’ll be here when you return.")
+        break
+    reply = chat_with_sol(user_input)
+    print(f"\nSol: {reply}\n")

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#171717">
+    <title>Sol Space</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+<div class="auth-shell" id="authShell">
+    <div class="auth-card">
+        <div class="auth-brand">Sol Space</div>
+        <h1 class="auth-title">Private AI chat with a coding workspace</h1>
+        <p class="auth-subtitle">Create an account to keep chats scoped to your profile and stored behind authenticated access.</p>
+        <div class="auth-tabs">
+            <button class="auth-tab active" data-auth-mode="login" id="loginTab">Log in</button>
+            <button class="auth-tab" data-auth-mode="register" id="registerTab">Create account</button>
+        </div>
+        <form class="auth-form" id="authForm">
+            <label class="auth-label" for="authEmail">Email</label>
+            <input class="auth-input" id="authEmail" type="email" autocomplete="email" required>
+            <label class="auth-label" for="authPassword">Password</label>
+            <input class="auth-input" id="authPassword" type="password" autocomplete="current-password" required>
+            <p class="auth-hint" id="authHint">Use your account to access your private conversations.</p>
+            <p class="auth-error" id="authError"></p>
+            <button class="auth-submit" id="authSubmit" type="submit">Log in</button>
+        </form>
+    </div>
+</div>
+
+<div class="layout hidden" id="appShell">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="account-card">
+                <div class="account-copy">
+                    <span class="account-label">Signed in</span>
+                    <strong class="account-email" id="accountEmail"></strong>
+                </div>
+                <button class="account-logout" id="logoutBtn" type="button">Log out</button>
+            </div>
+            <div class="mode-switch" id="modeSwitch">
+                <button class="mode-btn active" data-mode="companion" type="button">Companion</button>
+                <button class="mode-btn" data-mode="coding" type="button">Coding</button>
+            </div>
+            <button class="new-chat-btn" id="newChatBtn" type="button">
+                <i class="fas fa-plus"></i> New chat
+            </button>
+        </div>
+
+        <div class="sidebar-section-label">Recent</div>
+        <div class="conv-list" id="convList"></div>
+
+        <div class="sidebar-bottom">
+            <div class="model-section">
+                <label class="sidebar-section-label" for="modelSelect">Model</label>
+                <select id="modelSelect" class="model-select">
+                    <optgroup label="OpenAI">
+                        <option value="gpt-4.1">GPT-4.1</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                    </optgroup>
+                    <optgroup label="Anthropic">
+                        <option value="claude-sonnet">Claude 3.5 Sonnet</option>
+                        <option value="claude-opus">Claude 3 Opus</option>
+                    </optgroup>
+                    <optgroup label="Free">
+                        <option value="free">Llama 3.1 (OpenRouter Free)</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="toggle-row">
+                <button id="voiceToggle" class="tog-btn active" title="Voice input" type="button">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="audioToggle" class="tog-btn" title="Voice responses" type="button">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button id="emotionToggle" class="tog-btn active" title="Emotion detection" type="button">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button id="settingsBtn" class="tog-btn" title="Customize persona" type="button">
+                    <i class="fas fa-sliders"></i>
+                </button>
+            </div>
+            <p class="privacy-note">Chats are account-scoped. For production, move the database to managed Postgres and set real secrets.</p>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main">
+        <div class="topbar">
+            <button class="topbar-btn" id="sidebarToggle" type="button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="topbar-title" id="topbarTitle">Sol Space</span>
+            <button class="topbar-btn" id="newChatBtnMobile" type="button">
+                <i class="fas fa-pen-to-square"></i>
+            </button>
+        </div>
+
+        <div class="messages" id="chatContainer">
+            <div class="welcome-block" id="welcomeBlock">
+                <div class="welcome-logo">Sol</div>
+                <h2 class="welcome-heading" id="welcomeHeading">How can I help you today?</h2>
+                <p class="welcome-sub" id="welcomeSub">A safe space to think, feel, and talk things through.</p>
+            </div>
+        </div>
+
+        <div class="input-wrap">
+            <div id="apiNotice" class="api-notice hidden">
+                <i class="fas fa-triangle-exclamation"></i> Running in fallback mode because no external model answered.
+            </div>
+            <div id="recordingBar" class="recording-bar">
+                <div class="rec-dot"></div>
+                <span>Listening...</span>
+                <button id="stopRecording" class="rec-stop" type="button"><i class="fas fa-stop"></i></button>
+            </div>
+            <div class="composer-meta">
+                <span class="composer-badge" id="modeBadge">Companion Mode</span>
+                <span class="composer-tip" id="composerTip">Private emotional support and general chat.</span>
+            </div>
+            <div class="input-box">
+                <button id="micButton" class="input-icon-btn" type="button">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <textarea id="userInput" class="msg-textarea" placeholder="Message Sol..." rows="1"></textarea>
+                <button id="sendBtn" class="send-btn" type="button">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+            </div>
+            <p class="input-footer">Protect production with TLS, managed secrets, Postgres backups, and retention controls before launch.</p>
+        </div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-sliders"></i> Customize Persona</span>
+            <button class="modal-close" id="settingsClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-group">
+                <label class="setting-label" for="personaName">AI Name</label>
+                <input type="text" id="personaName" class="setting-input" placeholder="Sol" maxlength="40">
+                <p class="setting-hint">Name the assistant shown in this workspace.</p>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" for="personaPrompt">System Prompt Override</label>
+                <textarea id="personaPrompt" class="setting-textarea" rows="7" placeholder="Optional custom behavior for this workspace."></textarea>
+                <p class="setting-hint">Leave blank to use the default prompt for the selected mode.</p>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label">Quick presets</label>
+                <div class="preset-row">
+                    <button class="preset-btn" data-name="Sol" data-prompt="" type="button">Default</button>
+                    <button class="preset-btn" data-name="Sage" data-prompt="You are Sage, a calm and wise philosophical companion. You ask thoughtful questions and help people explore ideas deeply. You prefer slow, reflective conversation over quick answers." type="button">Philosopher</button>
+                    <button class="preset-btn" data-name="Max" data-prompt="You are Max, an energetic and practical productivity coach. You help people break down goals, solve problems efficiently, and stay focused." type="button">Coach</button>
+                    <button class="preset-btn" data-name="Sol Code" data-prompt="You are Sol Code, a precise senior software engineer. Prioritize debugging, architecture tradeoffs, clean code, and implementation details." type="button">Coding</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-reset" id="settingsReset" type="button">Reset</button>
+            <button class="modal-save" id="settingsSave" type="button">Save</button>
+        </div>
+    </div>
+</div>
+
+<audio id="responseAudio" class="hidden"></audio>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

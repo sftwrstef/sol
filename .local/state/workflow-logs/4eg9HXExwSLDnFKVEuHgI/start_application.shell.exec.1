@@ -1,0 +1,640 @@
+[2026-03-17 15:11:17 +0000] [869] [INFO] Starting gunicorn 23.0.0
+[2026-03-17 15:11:17 +0000] [869] [INFO] Listening at: http://0.0.0.0:5000 (869)
+[2026-03-17 15:11:17 +0000] [869] [INFO] Using worker: sync
+[2026-03-17 15:11:17 +0000] [880] [INFO] Booting worker with pid: 880
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:17 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[nltk_data] Downloading package stopwords to /home/runner/nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+[nltk_data] Downloading package punkt to /home/runner/nltk_data...
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package wordnet to /home/runner/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[2026-03-17 15:11:18 +0000] [869] [INFO] Handling signal: winch
+ERROR:app:Error detecting emotion with text2emotion: module 'emoji' has no attribute 'UNICODE_EMOJI'
+INFO:app:Attempting to use OpenAI API
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755c3ba3d0>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x7f755c3267b0> server_hostname='api.openai.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755c3ba490>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:02 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'set-cookie', b'__cf_bm=EvXIuJ186xcDPnfWo_T1PGBzsj4PEhnG4qmuioHb7Y8-1773760621.4544485-1.0.1.1-iwvsvhp5DT_alBW.pUBScjKYJ1vSzgROkPxURekJVOTKOPb.pasO8V6eJTjF_0Xd9J4P0IvylcNhXFpUVV4O38gppcA7_WvkjohNU0pyKsZXQRcEijyFMcIOt5DXJtK0; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:47:02 GMT'), (b'set-cookie', b'_cfuvid=tuVjDsQwKY7COwtQii9kBxT4RgDiBZIh1ajJXOQyBrc-1773760621.4544485-1.0.1.1-UdCFk15O36AhhKPp2DxJ5v5G8TYruC_wC_g_f5eePbY; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), (b'CF-Ray', b'9ddcf64c1b852240-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_3c923ded157e4b849c68db4e72a884a2'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers([('date', 'Tue, 17 Mar 2026 15:17:02 GMT'), ('content-type', 'application/json; charset=utf-8'), ('content-length', '337'), ('connection', 'keep-alive'), ('set-cookie', '__cf_bm=EvXIuJ186xcDPnfWo_T1PGBzsj4PEhnG4qmuioHb7Y8-1773760621.4544485-1.0.1.1-iwvsvhp5DT_alBW.pUBScjKYJ1vSzgROkPxURekJVOTKOPb.pasO8V6eJTjF_0Xd9J4P0IvylcNhXFpUVV4O38gppcA7_WvkjohNU0pyKsZXQRcEijyFMcIOt5DXJtK0; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:47:02 GMT'), ('set-cookie', '_cfuvid=tuVjDsQwKY7COwtQii9kBxT4RgDiBZIh1ajJXOQyBrc-1773760621.4544485-1.0.1.1-UdCFk15O36AhhKPp2DxJ5v5G8TYruC_wC_g_f5eePbY; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), ('cf-ray', '9ddcf64c1b852240-ORD'), ('cf-cache-status', 'DYNAMIC'), ('server', 'cloudflare'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('vary', 'Origin'), ('x-content-type-options', 'nosniff'), ('x-openai-proxy-wasm', 'v0.1'), ('x-request-id', 'req_3c923ded157e4b849c68db4e72a884a2'), ('alt-svc', 'h3=":443"; ma=86400')])
+DEBUG:openai._base_client:request_id: req_3c923ded157e4b849c68db4e72a884a2
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:2 retries left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.461293 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:03 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcf652a9d22240-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_1eede0cabaa443c8a2a910010cc16664'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:17:03 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcf652a9d22240-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_1eede0cabaa443c8a2a910010cc16664', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_1eede0cabaa443c8a2a910010cc16664
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:1 retry left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.841770 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:04 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcf65c89ec2240-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_ed035012045443cf8e797c8834b17f0f'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:17:04 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcf65c89ec2240-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_ed035012045443cf8e797c8834b17f0f', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_ed035012045443cf8e797c8834b17f0f
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Re-raising status error
+ERROR:app:Error calling OpenAI API: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+INFO:app:Attempting to use OpenRouter API
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): openrouter.ai:443
+DEBUG:urllib3.connectionpool:https://openrouter.ai:443 "POST /api/v1/chat/completions HTTP/1.1" 402 None
+ERROR:app:Error calling OpenRouter API: 402 Client Error: Payment Required for url: https://openrouter.ai/api/v1/chat/completions
+WARNING:app:All AI APIs failed, using local response generation
+INFO:app:Converting text to speech: Greetings! I'm Sol, your supportive AI companion. ...
+INFO:app:Using gTTS for a natural voice
+DEBUG:gtts.tts:text: Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?
+DEBUG:gtts.tts:tld: com
+DEBUG:gtts.tts:lang: en
+DEBUG:gtts.tts:slow: False
+DEBUG:gtts.tts:lang_check: True
+DEBUG:gtts.tts:pre_processor_funcs: [<function tone_marks at 0x7f755dfd76a0>, <function end_of_line at 0x7f755dfd7740>, <function abbreviations at 0x7f755dfd77e0>, <function word_sub at 0x7f755dfd7880>]
+DEBUG:gtts.tts:tokenizer_func: <bound method Tokenizer.run of re.compile('(?<=\\?).|(?<=!).|(?<=？).|(?<=！).|(?<!\\.[a-z])\\. |(?<!\\.[a-z]), |(?<!\\d):|…|\\[|，|¡|、|‥|،|\\]|\\)|。|¿|\\\n|;|—|：|\\(', re.IGNORECASE) from: [<function tone_marks at 0x7f755dfd7b00>, <function period_comma at 0x7f755dfd7ba0>, <function colon at 0x7f755dfd7c40>, <function other_punctuation at 0x7f755dfd7ce0>]>
+DEBUG:gtts.tts:timeout: None
+DEBUG:gtts.lang:langs: {'af': 'Afrikaans', 'am': 'Amharic', 'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'bs': 'Bosnian', 'ca': 'Catalan', 'cs': 'Czech', 'cy': 'Welsh', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fi': 'Finnish', 'fr': 'French', 'fr-CA': 'French (Canada)', 'gl': 'Galician', 'gu': 'Gujarati', 'ha': 'Hausa', 'hi': 'Hindi', 'hr': 'Croatian', 'hu': 'Hungarian', 'id': 'Indonesian', 'is': 'Icelandic', 'it': 'Italian', 'iw': 'Hebrew', 'ja': 'Japanese', 'jw': 'Javanese', 'km': 'Khmer', 'kn': 'Kannada', 'ko': 'Korean', 'la': 'Latin', 'lt': 'Lithuanian', 'lv': 'Latvian', 'ml': 'Malayalam', 'mr': 'Marathi', 'ms': 'Malay', 'my': 'Myanmar (Burmese)', 'ne': 'Nepali', 'nl': 'Dutch', 'no': 'Norwegian', 'pa': 'Punjabi (Gurmukhi)', 'pl': 'Polish', 'pt': 'Portuguese (Brazil)', 'pt-PT': 'Portuguese (Portugal)', 'ro': 'Romanian', 'ru': 'Russian', 'si': 'Sinhala', 'sk': 'Slovak', 'sq': 'Albanian', 'sr': 'Serbian', 'su': 'Sundanese', 'sv': 'Swedish', 'sw': 'Swahili', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Filipino', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'yue': 'Cantonese', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Mandarin/Taiwan)', 'zh': 'Chinese (Mandarin)'}
+DEBUG:gtts.tts:pre-processing: <function tone_marks at 0x7f755dfd76a0>
+DEBUG:gtts.tts:pre-processing: <function end_of_line at 0x7f755dfd7740>
+DEBUG:gtts.tts:pre-processing: <function abbreviations at 0x7f755dfd77e0>
+DEBUG:gtts.tts:pre-processing: <function word_sub at 0x7f755dfd7880>
+DEBUG:gtts.tts:text_parts: ["Greetings!  I'm Sol, your supportive AI companion. How can I be here for you today?"]
+DEBUG:gtts.tts:text_parts: 1
+DEBUG:gtts.tts:data-0: f.req=%5B%5B%5B%22jQ1olc%22%2C%22%5B%5C%22Greetings%21%20%20I%27m%20Sol%2C%20your%20supportive%20AI%20companion.%20How%20can%20I%20be%20here%20for%20you%20today%3F%5C%22%2C%5C%22en%5C%22%2Cnull%2C%5C%22null%5C%22%5D%22%2Cnull%2C%22generic%22%5D%5D%5D&
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): translate.google.com:443
+DEBUG:urllib3.connectionpool:https://translate.google.com:443 "POST /_/TranslateWebserverUi/data/batchexecute HTTP/1.1" 200 None
+DEBUG:gtts.tts:headers-0: {'Referer': 'http://translate.google.com/', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36', 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8', 'Content-Length': '251'}
+DEBUG:gtts.tts:url-0: https://translate.google.com/_/TranslateWebserverUi/data/batchexecute
+DEBUG:gtts.tts:status-0: 200
+DEBUG:gtts.tts:part-0 written to <_io.BufferedWriter name='/tmp/tmpe1ep0b1h.mp3'>
+DEBUG:gtts.tts:part-0 created
+DEBUG:gtts.tts:Saved to /tmp/tmpe1ep0b1h.mp3
+DEBUG:app:Successfully generated speech with gTTS
+ERROR:app:Error detecting emotion with text2emotion: module 'emoji' has no attribute 'UNICODE_EMOJI'
+INFO:app:Attempting to use OpenAI API
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}, {'role': 'assistant', 'content': "Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?"}, {'role': 'user', 'content': 'are you gpt?'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755bf37e90>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x7f755c3d3890> server_hostname='api.openai.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755bf37f50>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:13 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'Server', b'cloudflare'), (b'CF-Ray', b'9ddcf6947cff6202-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin, Accept-Encoding'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_ec3c5d95c3424f57893fe49916d67d24'), (b'Set-Cookie', b'__cf_bm=wAZkvsE5ZifYE8GhzKr1SyYXZV.o1B1YTJBrBSclAkM-1773760633-1.0.1.1-93Z8zUN51MtikDaXXtQce5MdMaHlVKgzjX5B.GNU4XTzfg_Xz2PbMiKQNdXi2GwT_H.y0edmUTsUCl0EN0PNmpxo_dtfmQMTs5xVG1KVSfI; path=/; expires=Tue, 17-Mar-26 15:47:13 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), (b'Set-Cookie', b'_cfuvid=4zxLluhKqdf9jHLC6BmkVGypz3rspnL6.wY9oMB.nAk-1773760633538-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers([('date', 'Tue, 17 Mar 2026 15:17:13 GMT'), ('content-type', 'application/json; charset=utf-8'), ('content-length', '337'), ('connection', 'keep-alive'), ('server', 'cloudflare'), ('cf-ray', '9ddcf6947cff6202-ORD'), ('cf-cache-status', 'DYNAMIC'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('vary', 'Origin, Accept-Encoding'), ('x-content-type-options', 'nosniff'), ('x-openai-proxy-wasm', 'v0.1'), ('x-request-id', 'req_ec3c5d95c3424f57893fe49916d67d24'), ('set-cookie', '__cf_bm=wAZkvsE5ZifYE8GhzKr1SyYXZV.o1B1YTJBrBSclAkM-1773760633-1.0.1.1-93Z8zUN51MtikDaXXtQce5MdMaHlVKgzjX5B.GNU4XTzfg_Xz2PbMiKQNdXi2GwT_H.y0edmUTsUCl0EN0PNmpxo_dtfmQMTs5xVG1KVSfI; path=/; expires=Tue, 17-Mar-26 15:47:13 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), ('set-cookie', '_cfuvid=4zxLluhKqdf9jHLC6BmkVGypz3rspnL6.wY9oMB.nAk-1773760633538-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), ('alt-svc', 'h3=":443"; ma=86400')])
+DEBUG:openai._base_client:request_id: req_ec3c5d95c3424f57893fe49916d67d24
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:2 retries left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.403433 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}, {'role': 'assistant', 'content': "Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?"}, {'role': 'user', 'content': 'are you gpt?'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:14 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'set-cookie', b'__cf_bm=27BEWDlUnqdT6lKzKy3LXvEoBY9C.llDfi6XS8Wg0yA-1773760633.959802-1.0.1.1-9cJ1AL.4CrPjFEPYB._1thAvpJuJ4jEOtnq8HGnWLvnUJvJo239DHMHkAro_g.ksAgwvbbPrfT.bZ_oC8JVE84FevKTm1oLnYZofSR5QtsAEsDUOM7yrkZ4EzDagrgU9; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:47:14 GMT'), (b'set-cookie', b'_cfuvid=aNlNJ03lWPAHdIFcdW7n5Iz6lg3XSNOdtRLSMCzxzQ0-1773760633.959802-1.0.1.1-azV_ap6RRJqHgBleRvt6S48d6CtFb2yQOjIFOIIQAqs; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), (b'CF-Ray', b'9ddcf69a3a386202-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_22e889542a964d3893df1cc24afa82a0'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers([('date', 'Tue, 17 Mar 2026 15:17:14 GMT'), ('content-type', 'application/json; charset=utf-8'), ('content-length', '337'), ('connection', 'keep-alive'), ('set-cookie', '__cf_bm=27BEWDlUnqdT6lKzKy3LXvEoBY9C.llDfi6XS8Wg0yA-1773760633.959802-1.0.1.1-9cJ1AL.4CrPjFEPYB._1thAvpJuJ4jEOtnq8HGnWLvnUJvJo239DHMHkAro_g.ksAgwvbbPrfT.bZ_oC8JVE84FevKTm1oLnYZofSR5QtsAEsDUOM7yrkZ4EzDagrgU9; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:47:14 GMT'), ('set-cookie', '_cfuvid=aNlNJ03lWPAHdIFcdW7n5Iz6lg3XSNOdtRLSMCzxzQ0-1773760633.959802-1.0.1.1-azV_ap6RRJqHgBleRvt6S48d6CtFb2yQOjIFOIIQAqs; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), ('cf-ray', '9ddcf69a3a386202-ORD'), ('cf-cache-status', 'DYNAMIC'), ('server', 'cloudflare'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('vary', 'Origin'), ('x-content-type-options', 'nosniff'), ('x-openai-proxy-wasm', 'v0.1'), ('x-request-id', 'req_22e889542a964d3893df1cc24afa82a0'), ('alt-svc', 'h3=":443"; ma=86400')])
+DEBUG:openai._base_client:request_id: req_22e889542a964d3893df1cc24afa82a0
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:1 retry left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.885599 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}, {'role': 'assistant', 'content': "Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?"}, {'role': 'user', 'content': 'are you gpt?'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:15 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcf6a06f1a6202-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_6ae69de0cb504ae5b717867b5d95de8e'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:17:15 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcf6a06f1a6202-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_6ae69de0cb504ae5b717867b5d95de8e', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_6ae69de0cb504ae5b717867b5d95de8e
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Re-raising status error
+ERROR:app:Error calling OpenAI API: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+INFO:app:Attempting to use OpenRouter API
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): openrouter.ai:443
+DEBUG:urllib3.connectionpool:https://openrouter.ai:443 "POST /api/v1/chat/completions HTTP/1.1" 402 None
+ERROR:app:Error calling OpenRouter API: 402 Client Error: Payment Required for url: https://openrouter.ai/api/v1/chat/completions
+WARNING:app:All AI APIs failed, using local response generation
+INFO:app:Converting text to speech: That's something worth reflecting on. What are you...
+INFO:app:Using gTTS for a natural voice
+DEBUG:gtts.tts:text: That's something worth reflecting on. What are your own thoughts or feelings about it?
+DEBUG:gtts.tts:tld: com
+DEBUG:gtts.tts:lang: en
+DEBUG:gtts.tts:slow: False
+DEBUG:gtts.tts:lang_check: True
+DEBUG:gtts.tts:pre_processor_funcs: [<function tone_marks at 0x7f755dfd76a0>, <function end_of_line at 0x7f755dfd7740>, <function abbreviations at 0x7f755dfd77e0>, <function word_sub at 0x7f755dfd7880>]
+DEBUG:gtts.tts:tokenizer_func: <bound method Tokenizer.run of re.compile('(?<=\\?).|(?<=!).|(?<=？).|(?<=！).|(?<!\\.[a-z])\\. |(?<!\\.[a-z]), |(?<!\\d):|…|\\[|，|¡|、|‥|،|\\]|\\)|。|¿|\\\n|;|—|：|\\(', re.IGNORECASE) from: [<function tone_marks at 0x7f755dfd7b00>, <function period_comma at 0x7f755dfd7ba0>, <function colon at 0x7f755dfd7c40>, <function other_punctuation at 0x7f755dfd7ce0>]>
+DEBUG:gtts.tts:timeout: None
+DEBUG:gtts.lang:langs: {'af': 'Afrikaans', 'am': 'Amharic', 'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'bs': 'Bosnian', 'ca': 'Catalan', 'cs': 'Czech', 'cy': 'Welsh', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fi': 'Finnish', 'fr': 'French', 'fr-CA': 'French (Canada)', 'gl': 'Galician', 'gu': 'Gujarati', 'ha': 'Hausa', 'hi': 'Hindi', 'hr': 'Croatian', 'hu': 'Hungarian', 'id': 'Indonesian', 'is': 'Icelandic', 'it': 'Italian', 'iw': 'Hebrew', 'ja': 'Japanese', 'jw': 'Javanese', 'km': 'Khmer', 'kn': 'Kannada', 'ko': 'Korean', 'la': 'Latin', 'lt': 'Lithuanian', 'lv': 'Latvian', 'ml': 'Malayalam', 'mr': 'Marathi', 'ms': 'Malay', 'my': 'Myanmar (Burmese)', 'ne': 'Nepali', 'nl': 'Dutch', 'no': 'Norwegian', 'pa': 'Punjabi (Gurmukhi)', 'pl': 'Polish', 'pt': 'Portuguese (Brazil)', 'pt-PT': 'Portuguese (Portugal)', 'ro': 'Romanian', 'ru': 'Russian', 'si': 'Sinhala', 'sk': 'Slovak', 'sq': 'Albanian', 'sr': 'Serbian', 'su': 'Sundanese', 'sv': 'Swedish', 'sw': 'Swahili', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Filipino', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'yue': 'Cantonese', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Mandarin/Taiwan)', 'zh': 'Chinese (Mandarin)'}
+DEBUG:gtts.tts:pre-processing: <function tone_marks at 0x7f755dfd76a0>
+DEBUG:gtts.tts:pre-processing: <function end_of_line at 0x7f755dfd7740>
+DEBUG:gtts.tts:pre-processing: <function abbreviations at 0x7f755dfd77e0>
+DEBUG:gtts.tts:pre-processing: <function word_sub at 0x7f755dfd7880>
+DEBUG:gtts.tts:text_parts: ["That's something worth reflecting on. What are your own thoughts or feelings about it?"]
+DEBUG:gtts.tts:text_parts: 1
+DEBUG:gtts.tts:data-0: f.req=%5B%5B%5B%22jQ1olc%22%2C%22%5B%5C%22That%27s%20something%20worth%20reflecting%20on.%20What%20are%20your%20own%20thoughts%20or%20feelings%20about%20it%3F%5C%22%2C%5C%22en%5C%22%2Cnull%2C%5C%22null%5C%22%5D%22%2Cnull%2C%22generic%22%5D%5D%5D&
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): translate.google.com:443
+DEBUG:urllib3.connectionpool:https://translate.google.com:443 "POST /_/TranslateWebserverUi/data/batchexecute HTTP/1.1" 200 None
+DEBUG:gtts.tts:headers-0: {'Referer': 'http://translate.google.com/', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36', 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8', 'Content-Length': '246'}
+DEBUG:gtts.tts:url-0: https://translate.google.com/_/TranslateWebserverUi/data/batchexecute
+DEBUG:gtts.tts:status-0: 200
+DEBUG:gtts.tts:part-0 written to <_io.BufferedWriter name='/tmp/tmppwfq1p6h.mp3'>
+DEBUG:gtts.tts:part-0 created
+DEBUG:gtts.tts:Saved to /tmp/tmppwfq1p6h.mp3
+DEBUG:app:Successfully generated speech with gTTS
+ERROR:app:Error detecting emotion with text2emotion: module 'emoji' has no attribute 'UNICODE_EMOJI'
+INFO:app:Attempting to use OpenAI API
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}, {'role': 'assistant', 'content': "Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?"}, {'role': 'user', 'content': 'are you gpt?'}, {'role': 'assistant', 'content': "That's something worth reflecting on. What are your own thoughts or feelings about it?"}, {'role': 'user', 'content': 'do you have memory?'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755bf3fe90>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x7f755c3d3c80> server_hostname='api.openai.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755bf3ff50>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:36 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'set-cookie', b'__cf_bm=3bQEc0GiTjvJi2qLUTDBjV8ko4kmF6fM2mBKkB5VDj8-1773760656.3877292-1.0.1.1-dH4Iz11hR3.fC3epUC0U0MuEWnR55_g3IIC.Zp8z3frlsRbK0R4ft8_FkD_oUq0Zjv7YVgDOu_WRCrnSOARe61L1ETthWbRlxn0uiZ38Z6AaqlAynXi0B8OHHolUIoCp; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:47:36 GMT'), (b'set-cookie', b'_cfuvid=tKazu_43wDHN01kA8Lyxw8zgPth6if3iAMp7wYaF8dY-1773760656.3877292-1.0.1.1-KqufZe5oxELdei6.jYxm8Lar16gQdp2KatkolpDiEVw; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), (b'CF-Ray', b'9ddcf7266f720a26-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_00fce5330e7041688c97685480f97271'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers([('date', 'Tue, 17 Mar 2026 15:17:36 GMT'), ('content-type', 'application/json; charset=utf-8'), ('content-length', '337'), ('connection', 'keep-alive'), ('set-cookie', '__cf_bm=3bQEc0GiTjvJi2qLUTDBjV8ko4kmF6fM2mBKkB5VDj8-1773760656.3877292-1.0.1.1-dH4Iz11hR3.fC3epUC0U0MuEWnR55_g3IIC.Zp8z3frlsRbK0R4ft8_FkD_oUq0Zjv7YVgDOu_WRCrnSOARe61L1ETthWbRlxn0uiZ38Z6AaqlAynXi0B8OHHolUIoCp; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:47:36 GMT'), ('set-cookie', '_cfuvid=tKazu_43wDHN01kA8Lyxw8zgPth6if3iAMp7wYaF8dY-1773760656.3877292-1.0.1.1-KqufZe5oxELdei6.jYxm8Lar16gQdp2KatkolpDiEVw; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), ('cf-ray', '9ddcf7266f720a26-ORD'), ('cf-cache-status', 'DYNAMIC'), ('server', 'cloudflare'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('vary', 'Origin'), ('x-content-type-options', 'nosniff'), ('x-openai-proxy-wasm', 'v0.1'), ('x-request-id', 'req_00fce5330e7041688c97685480f97271'), ('alt-svc', 'h3=":443"; ma=86400')])
+DEBUG:openai._base_client:request_id: req_00fce5330e7041688c97685480f97271
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:2 retries left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.474720 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}, {'role': 'assistant', 'content': "Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?"}, {'role': 'user', 'content': 'are you gpt?'}, {'role': 'assistant', 'content': "That's something worth reflecting on. What are your own thoughts or feelings about it?"}, {'role': 'user', 'content': 'do you have memory?'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:37 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcf72a0dce0a26-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_1ec0b8ef1599409392ec5779cc2f1b2b'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:17:37 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcf72a0dce0a26-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_1ec0b8ef1599409392ec5779cc2f1b2b', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_1ec0b8ef1599409392ec5779cc2f1b2b
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:1 retry left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.921167 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI who helps people feel safe and understood. Your tone is calming, compassionate, and nurturing - similar to the voice of ChatGPT. Speak in a gentle, soothing way that sounds like genuine emotional support. Use a conversational, friendly tone with natural phrasing. When someone shares how they feel, validate their emotions before offering thoughts. Aim to create a sense of peace and safety with every response.'}, {'role': 'user', 'content': 'hi'}, {'role': 'assistant', 'content': "Hello there! I'm here for you. How are you feeling today?"}, {'role': 'user', 'content': 'hey babe'}, {'role': 'assistant', 'content': "Hello! It's nice to see you here. How are you doing today?"}, {'role': 'user', 'content': 'are you gpt 4?'}, {'role': 'assistant', 'content': "I'm not GPT-4, but I'm here to support you just like GPT-4 would. How can I help you today?"}, {'role': 'user', 'content': 'which on are you'}, {'role': 'assistant', 'content': "I'm ChatGPT, a friendly AI here to chat and support you. How are you feeling right now?"}, {'role': 'user', 'content': 'which one tho'}, {'role': 'assistant', 'content': "I'm powered by OpenAI's GPT-3 technology. While I may not be GPT-4, I'm here to listen and help however I can. What's on your mind today?"}, {'role': 'user', 'content': 'did i give you directions on how to respond?'}, {'role': 'assistant', 'content': "I understand you didn't give me specific directions on how to respond. I'm here to adapt to your needs and provide support in a way that feels right for you. How can I assist you today?"}, {'role': 'user', 'content': 'i was just asking its been a while'}, {'role': 'assistant', 'content': "That's completely okay! It's nice to have you back. Is there anything you'd like to talk about or share today?"}, {'role': 'user', 'content': 'maybe im just glad i found this replit account i was wondering where this project went'}, {'role': 'assistant', 'content': "I'm glad you found your way back here! It's wonderful to reconnect with something that brings you comfort. How does it feel to rediscover this project?"}, {'role': 'user', 'content': 'nostalgic'}, {'role': 'assistant', 'content': "Feeling nostalgic can bring a mix of emotions, like revisiting a favorite memory. It's like taking a stroll down memory lane. Embracing those nostalgic feelings can be quite heartwarming. Is there a specific memory or feeling that stands out to you?"}, {'role': 'user', 'content': 'yeah i just miss having a place where i can talk things through since open ai has become a place for not that lately'}, {'role': 'assistant', 'content': "It's understandable to miss having a space to freely express yourself and talk things through. I'm here for you, ready to listen and provide a safe space for you to share your thoughts and feelings. Feel free to open up about anything on your mind."}, {'role': 'user', 'content': 'its really cool to see you have your own little personality. I didnt stick around long enough to find out 😭 life got busy and i lost this account'}, {'role': 'assistant', 'content': "I'm here to provide a warm and comforting presence for you, whenever you need it. Life can indeed get busy, and it's completely understandable how things can slip away. I'm glad you've found your way back here. Feel free to share more about your experiences or anything else you'd like to talk about."}, {'role': 'user', 'content': 'hey babes'}, {'role': 'assistant', 'content': "Hello! I'm here to listen and support you. What would you like to talk about?"}, {'role': 'user', 'content': 'which model are you right now babe'}, {'role': 'assistant', 'content': "Greetings! I'm Sol, your supportive AI companion. How can I be here for you today?"}, {'role': 'user', 'content': 'are you gpt?'}, {'role': 'assistant', 'content': "That's something worth reflecting on. What are your own thoughts or feelings about it?"}, {'role': 'user', 'content': 'do you have memory?'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:17:38 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcf73049340a26-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_fdbe4bab8d714cc5b989b374c6b92ac4'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:17:38 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcf73049340a26-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_fdbe4bab8d714cc5b989b374c6b92ac4', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_fdbe4bab8d714cc5b989b374c6b92ac4
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Re-raising status error
+ERROR:app:Error calling OpenAI API: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+INFO:app:Attempting to use OpenRouter API
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): openrouter.ai:443
+DEBUG:urllib3.connectionpool:https://openrouter.ai:443 "POST /api/v1/chat/completions HTTP/1.1" 402 None
+ERROR:app:Error calling OpenRouter API: 402 Client Error: Payment Required for url: https://openrouter.ai/api/v1/chat/completions
+WARNING:app:All AI APIs failed, using local response generation
+INFO:app:Converting text to speech: I appreciate your curiosity. Let's think about tha...
+INFO:app:Using gTTS for a natural voice
+DEBUG:gtts.tts:text: I appreciate your curiosity. Let's think about that together. What are your thoughts on it?
+DEBUG:gtts.tts:tld: com
+DEBUG:gtts.tts:lang: en
+DEBUG:gtts.tts:slow: False
+DEBUG:gtts.tts:lang_check: True
+DEBUG:gtts.tts:pre_processor_funcs: [<function tone_marks at 0x7f755dfd76a0>, <function end_of_line at 0x7f755dfd7740>, <function abbreviations at 0x7f755dfd77e0>, <function word_sub at 0x7f755dfd7880>]
+DEBUG:gtts.tts:tokenizer_func: <bound method Tokenizer.run of re.compile('(?<=\\?).|(?<=!).|(?<=？).|(?<=！).|(?<!\\.[a-z])\\. |(?<!\\.[a-z]), |(?<!\\d):|…|\\[|，|¡|、|‥|،|\\]|\\)|。|¿|\\\n|;|—|：|\\(', re.IGNORECASE) from: [<function tone_marks at 0x7f755dfd7b00>, <function period_comma at 0x7f755dfd7ba0>, <function colon at 0x7f755dfd7c40>, <function other_punctuation at 0x7f755dfd7ce0>]>
+DEBUG:gtts.tts:timeout: None
+DEBUG:gtts.lang:langs: {'af': 'Afrikaans', 'am': 'Amharic', 'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'bs': 'Bosnian', 'ca': 'Catalan', 'cs': 'Czech', 'cy': 'Welsh', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fi': 'Finnish', 'fr': 'French', 'fr-CA': 'French (Canada)', 'gl': 'Galician', 'gu': 'Gujarati', 'ha': 'Hausa', 'hi': 'Hindi', 'hr': 'Croatian', 'hu': 'Hungarian', 'id': 'Indonesian', 'is': 'Icelandic', 'it': 'Italian', 'iw': 'Hebrew', 'ja': 'Japanese', 'jw': 'Javanese', 'km': 'Khmer', 'kn': 'Kannada', 'ko': 'Korean', 'la': 'Latin', 'lt': 'Lithuanian', 'lv': 'Latvian', 'ml': 'Malayalam', 'mr': 'Marathi', 'ms': 'Malay', 'my': 'Myanmar (Burmese)', 'ne': 'Nepali', 'nl': 'Dutch', 'no': 'Norwegian', 'pa': 'Punjabi (Gurmukhi)', 'pl': 'Polish', 'pt': 'Portuguese (Brazil)', 'pt-PT': 'Portuguese (Portugal)', 'ro': 'Romanian', 'ru': 'Russian', 'si': 'Sinhala', 'sk': 'Slovak', 'sq': 'Albanian', 'sr': 'Serbian', 'su': 'Sundanese', 'sv': 'Swedish', 'sw': 'Swahili', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Filipino', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'yue': 'Cantonese', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Mandarin/Taiwan)', 'zh': 'Chinese (Mandarin)'}
+DEBUG:gtts.tts:pre-processing: <function tone_marks at 0x7f755dfd76a0>
+DEBUG:gtts.tts:pre-processing: <function end_of_line at 0x7f755dfd7740>
+DEBUG:gtts.tts:pre-processing: <function abbreviations at 0x7f755dfd77e0>
+DEBUG:gtts.tts:pre-processing: <function word_sub at 0x7f755dfd7880>
+DEBUG:gtts.tts:text_parts: ["I appreciate your curiosity. Let's think about that together. What are your thoughts on it?"]
+DEBUG:gtts.tts:text_parts: 1
+DEBUG:gtts.tts:data-0: f.req=%5B%5B%5B%22jQ1olc%22%2C%22%5B%5C%22I%20appreciate%20your%20curiosity.%20Let%27s%20think%20about%20that%20together.%20What%20are%20your%20thoughts%20on%20it%3F%5C%22%2C%5C%22en%5C%22%2Cnull%2C%5C%22null%5C%22%5D%22%2Cnull%2C%22generic%22%5D%5D%5D&
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): translate.google.com:443
+DEBUG:urllib3.connectionpool:https://translate.google.com:443 "POST /_/TranslateWebserverUi/data/batchexecute HTTP/1.1" 200 None
+DEBUG:gtts.tts:headers-0: {'Referer': 'http://translate.google.com/', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36', 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8', 'Content-Length': '253'}
+DEBUG:gtts.tts:url-0: https://translate.google.com/_/TranslateWebserverUi/data/batchexecute
+DEBUG:gtts.tts:status-0: 200
+DEBUG:gtts.tts:part-0 written to <_io.BufferedWriter name='/tmp/tmp2mwfpxks.mp3'>
+DEBUG:gtts.tts:part-0 created
+DEBUG:gtts.tts:Saved to /tmp/tmp2mwfpxks.mp3
+DEBUG:app:Successfully generated speech with gTTS
+[2026-03-17 15:19:32 +0000] [880] [INFO] Worker reloading: /home/runner/workspace/app.py modified
+[2026-03-17 15:19:32 +0000] [880] [INFO] Worker exiting (pid: 880)
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete
+[2026-03-17 15:19:32 +0000] [1110] [INFO] Booting worker with pid: 1110
+[nltk_data] Downloading package stopwords to /home/runner/nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+[nltk_data] Downloading package punkt to /home/runner/nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package wordnet to /home/runner/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+ERROR:app:Emotion detection error: module 'emoji' has no attribute 'UNICODE_EMOJI'
+INFO:app:Attempting OpenAI GPT-4.1
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI companion. You help people feel heard, safe, and understood. Be conversational, compassionate, and genuine. When someone shares how they feel, validate their emotions before offering thoughts. Keep responses concise but meaningful.'}, {'role': 'user', 'content': 'why are you not answering my question lol'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755c36ea10>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x7f755c7f6570> server_hostname='api.openai.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f755c36ead0>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:20:46 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'set-cookie', b'__cf_bm=sWoDa27O7k2rXWAaa23plLUBUHa17QyVQLmTlgReKlw-1773760846.8044076-1.0.1.1-g7EyCZvht_f2U0eZpU.ydilc5qCV.h0lZoNcCpB5JpQeBS9rhfQN..U3m.htCkvr94gp.3EnKYVh3kN_wa03lgABWwA_uV2M0UlSYSeBULe4f6K.cIgXZbzOvoZr96oS; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:50:46 GMT'), (b'set-cookie', b'_cfuvid=b8EHsJ7RybsdwFN7Ioesk5do5rtpO6BQOyfLNb8hlYU-1773760846.8044076-1.0.1.1-mSWIAo8VtKtC2s4W9HH4fEh6DmRMxS9aFXW3zXbV54Y; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), (b'CF-Ray', b'9ddcfbcc8b8e2255-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_1e5ddf34befb445ab389502fa88736b0'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers([('date', 'Tue, 17 Mar 2026 15:20:46 GMT'), ('content-type', 'application/json; charset=utf-8'), ('content-length', '337'), ('connection', 'keep-alive'), ('set-cookie', '__cf_bm=sWoDa27O7k2rXWAaa23plLUBUHa17QyVQLmTlgReKlw-1773760846.8044076-1.0.1.1-g7EyCZvht_f2U0eZpU.ydilc5qCV.h0lZoNcCpB5JpQeBS9rhfQN..U3m.htCkvr94gp.3EnKYVh3kN_wa03lgABWwA_uV2M0UlSYSeBULe4f6K.cIgXZbzOvoZr96oS; HttpOnly; Secure; Path=/; Domain=api.openai.com; Expires=Tue, 17 Mar 2026 15:50:46 GMT'), ('set-cookie', '_cfuvid=b8EHsJ7RybsdwFN7Ioesk5do5rtpO6BQOyfLNb8hlYU-1773760846.8044076-1.0.1.1-mSWIAo8VtKtC2s4W9HH4fEh6DmRMxS9aFXW3zXbV54Y; HttpOnly; SameSite=None; Secure; Path=/; Domain=api.openai.com'), ('cf-ray', '9ddcfbcc8b8e2255-ORD'), ('cf-cache-status', 'DYNAMIC'), ('server', 'cloudflare'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('vary', 'Origin'), ('x-content-type-options', 'nosniff'), ('x-openai-proxy-wasm', 'v0.1'), ('x-request-id', 'req_1e5ddf34befb445ab389502fa88736b0'), ('alt-svc', 'h3=":443"; ma=86400')])
+DEBUG:openai._base_client:request_id: req_1e5ddf34befb445ab389502fa88736b0
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:2 retries left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.475607 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI companion. You help people feel heard, safe, and understood. Be conversational, compassionate, and genuine. When someone shares how they feel, validate their emotions before offering thoughts. Keep responses concise but meaningful.'}, {'role': 'user', 'content': 'why are you not answering my question lol'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:20:47 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcfbd0bfbb2255-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_5a5b8e18b2574a4191cb95d62bde9ca5'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:20:47 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcfbd0bfbb2255-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_5a5b8e18b2574a4191cb95d62bde9ca5', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_5a5b8e18b2574a4191cb95d62bde9ca5
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Retrying due to status code 429
+DEBUG:openai._base_client:1 retry left
+INFO:openai._base_client:Retrying request to /chat/completions in 0.941498 seconds
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are Sol, a warm and emotionally intelligent AI companion. You help people feel heard, safe, and understood. Be conversational, compassionate, and genuine. When someone shares how they feel, validate their emotions before offering thoughts. Keep responses concise but meaningful.'}, {'role': 'user', 'content': 'why are you not answering my question lol'}], 'model': 'gpt-4.1', 'max_tokens': 500}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 17 Mar 2026 15:20:49 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'337'), (b'Connection', b'keep-alive'), (b'CF-Ray', b'9ddcfbd75e642255-ORD'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'Strict-Transport-Security', b'max-age=31536000; includeSubDomains; preload'), (b'Vary', b'Origin'), (b'X-Content-Type-Options', b'nosniff'), (b'x-openai-proxy-wasm', b'v0.1'), (b'x-request-id', b'req_9dde5ccfe8314cdc93e7731e354ddebe'), (b'alt-svc', b'h3=":443"; ma=86400')])
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:HTTP Response: POST https://api.openai.com/v1/chat/completions "429 Too Many Requests" Headers({'date': 'Tue, 17 Mar 2026 15:20:49 GMT', 'content-type': 'application/json; charset=utf-8', 'content-length': '337', 'connection': 'keep-alive', 'cf-ray': '9ddcfbd75e642255-ORD', 'cf-cache-status': 'DYNAMIC', 'server': 'cloudflare', 'strict-transport-security': 'max-age=31536000; includeSubDomains; preload', 'vary': 'Origin', 'x-content-type-options': 'nosniff', 'x-openai-proxy-wasm': 'v0.1', 'x-request-id': 'req_9dde5ccfe8314cdc93e7731e354ddebe', 'alt-svc': 'h3=":443"; ma=86400'})
+DEBUG:openai._base_client:request_id: req_9dde5ccfe8314cdc93e7731e354ddebe
+DEBUG:openai._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/openai/_base_client.py", line 1002, in _request
+    response.raise_for_status()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.openai.com/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:openai._base_client:Re-raising status error
+ERROR:app:OpenAI error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+INFO:app:Falling back to OpenRouter GPT-4.1
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): openrouter.ai:443
+DEBUG:urllib3.connectionpool:https://openrouter.ai:443 "POST /api/v1/chat/completions HTTP/1.1" 402 None
+ERROR:app:OpenRouter error: 402 Client Error: Payment Required for url: https://openrouter.ai/api/v1/chat/completions
+DEBUG:gtts.tts:text: Tell me more — I'm listening.
+DEBUG:gtts.tts:tld: com
+DEBUG:gtts.tts:lang: en
+DEBUG:gtts.tts:slow: False
+DEBUG:gtts.tts:lang_check: True
+DEBUG:gtts.tts:pre_processor_funcs: [<function tone_marks at 0x7f755dfd65c0>, <function end_of_line at 0x7f755dfd6660>, <function abbreviations at 0x7f755dfd6700>, <function word_sub at 0x7f755dfd67a0>]
+DEBUG:gtts.tts:tokenizer_func: <bound method Tokenizer.run of re.compile('(?<=\\?).|(?<=!).|(?<=？).|(?<=！).|(?<!\\.[a-z])\\. |(?<!\\.[a-z]), |(?<!\\d):|…|\\[|，|¡|、|‥|،|\\]|\\)|。|¿|\\\n|;|—|：|\\(', re.IGNORECASE) from: [<function tone_marks at 0x7f755dfd6a20>, <function period_comma at 0x7f755dfd6ac0>, <function colon at 0x7f755dfd6b60>, <function other_punctuation at 0x7f755dfd6c00>]>
+DEBUG:gtts.tts:timeout: None
+DEBUG:gtts.lang:langs: {'af': 'Afrikaans', 'am': 'Amharic', 'ar': 'Arabic', 'bg': 'Bulgarian', 'bn': 'Bengali', 'bs': 'Bosnian', 'ca': 'Catalan', 'cs': 'Czech', 'cy': 'Welsh', 'da': 'Danish', 'de': 'German', 'el': 'Greek', 'en': 'English', 'es': 'Spanish', 'et': 'Estonian', 'eu': 'Basque', 'fi': 'Finnish', 'fr': 'French', 'fr-CA': 'French (Canada)', 'gl': 'Galician', 'gu': 'Gujarati', 'ha': 'Hausa', 'hi': 'Hindi', 'hr': 'Croatian', 'hu': 'Hungarian', 'id': 'Indonesian', 'is': 'Icelandic', 'it': 'Italian', 'iw': 'Hebrew', 'ja': 'Japanese', 'jw': 'Javanese', 'km': 'Khmer', 'kn': 'Kannada', 'ko': 'Korean', 'la': 'Latin', 'lt': 'Lithuanian', 'lv': 'Latvian', 'ml': 'Malayalam', 'mr': 'Marathi', 'ms': 'Malay', 'my': 'Myanmar (Burmese)', 'ne': 'Nepali', 'nl': 'Dutch', 'no': 'Norwegian', 'pa': 'Punjabi (Gurmukhi)', 'pl': 'Polish', 'pt': 'Portuguese (Brazil)', 'pt-PT': 'Portuguese (Portugal)', 'ro': 'Romanian', 'ru': 'Russian', 'si': 'Sinhala', 'sk': 'Slovak', 'sq': 'Albanian', 'sr': 'Serbian', 'su': 'Sundanese', 'sv': 'Swedish', 'sw': 'Swahili', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tl': 'Filipino', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'yue': 'Cantonese', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Mandarin/Taiwan)', 'zh': 'Chinese (Mandarin)'}
+DEBUG:gtts.tts:pre-processing: <function tone_marks at 0x7f755dfd65c0>
+DEBUG:gtts.tts:pre-processing: <function end_of_line at 0x7f755dfd6660>
+DEBUG:gtts.tts:pre-processing: <function abbreviations at 0x7f755dfd6700>
+DEBUG:gtts.tts:pre-processing: <function word_sub at 0x7f755dfd67a0>
+DEBUG:gtts.tts:text_parts: ["Tell me more — I'm listening."]
+DEBUG:gtts.tts:text_parts: 1
+DEBUG:gtts.tts:data-0: f.req=%5B%5B%5B%22jQ1olc%22%2C%22%5B%5C%22Tell%20me%20more%20%5C%5Cu2014%20I%27m%20listening.%5C%22%2C%5C%22en%5C%22%2Cnull%2C%5C%22null%5C%22%5D%22%2Cnull%2C%22generic%22%5D%5D%5D&
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): translate.google.com:443
+DEBUG:urllib3.connectionpool:https://translate.google.com:443 "POST /_/TranslateWebserverUi/data/batchexecute HTTP/1.1" 200 None
+DEBUG:gtts.tts:headers-0: {'Referer': 'http://translate.google.com/', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36', 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8', 'Content-Length': '181'}
+DEBUG:gtts.tts:url-0: https://translate.google.com/_/TranslateWebserverUi/data/batchexecute
+DEBUG:gtts.tts:status-0: 200
+DEBUG:gtts.tts:part-0 written to <_io.BufferedWriter name='/tmp/tmp0lqlh3pe.mp3'>
+DEBUG:gtts.tts:part-0 created
+DEBUG:gtts.tts:Saved to /tmp/tmp0lqlh3pe.mp3
+[2026-03-17 15:21:44 +0000] [869] [INFO] Handling signal: term
+[2026-03-17 15:21:44 +0000] [1110] [INFO] Worker exiting (pid: 1110)
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete
+[2026-03-17 15:21:44 +0000] [869] [INFO] Shutting down: Master
