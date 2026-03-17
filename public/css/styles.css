@@ -98,6 +98,7 @@ button, input, textarea, select {
 .auth-submit,
 .mode-btn,
 .new-chat-btn,
+.secondary-wide-btn,
 .tog-btn,
 .panel-action-btn,
 .modal-close,
@@ -322,7 +323,8 @@ button, input, textarea, select {
 
 .mode-btn,
 .tog-btn,
-.new-chat-btn {
+.new-chat-btn,
+.secondary-wide-btn {
     border: 1px solid var(--border);
     background: transparent;
     color: var(--text-dim);
@@ -351,8 +353,14 @@ button, input, textarea, select {
     color: white;
 }
 
+.secondary-wide-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
 .conv-list,
-.memory-list,
 .project-list {
     display: grid;
     gap: 6px;
@@ -365,8 +373,7 @@ button, input, textarea, select {
     min-height: 0;
 }
 
-.project-list,
-.memory-list {
+.project-list {
     max-height: 124px;
 }
 
@@ -427,7 +434,6 @@ button, input, textarea, select {
     padding: 6px 8px;
 }
 
-.memory-item,
 .project-item,
 .project-select-btn {
     display: grid;
@@ -437,7 +443,6 @@ button, input, textarea, select {
 
 .conv-item:hover,
 .conv-item.active,
-.memory-item:hover,
 .project-item:hover,
 .project-item.active {
     background: rgba(255, 255, 255, 0.05);
@@ -446,14 +451,12 @@ button, input, textarea, select {
 }
 
 .conv-item-title,
-.memory-item-title,
 .project-item-title {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.memory-item-copy,
 .project-item-copy {
     color: var(--text-dim);
     font-size: 0.78rem;
@@ -932,6 +935,50 @@ button, input, textarea, select {
     padding: 20px;
 }
 
+.memory-hub-header {
+    padding: 0;
+}
+
+.memory-hub-list {
+    display: grid;
+    gap: 10px;
+    max-height: min(52svh, 520px);
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.memory-item {
+    display: grid;
+    gap: 6px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.memory-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(188, 140, 255, 0.22);
+}
+
+.memory-item-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.memory-item-copy {
+    color: var(--text-dim);
+    font-size: 0.84rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .setting-group {
     display: grid;
     gap: 8px;
@@ -1024,8 +1071,7 @@ button, input, textarea, select {
         padding-bottom: 20px;
     }
 
-    .project-list,
-    .memory-list {
+    .project-list {
         max-height: none;
     }
 }
@@ -1106,7 +1152,6 @@ button, input, textarea, select {
     }
 
     .project-list,
-    .memory-list,
     .conv-list {
         max-height: none;
         padding-right: 0;

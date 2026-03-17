@@ -76,14 +76,6 @@
             <div class="project-list" id="projectList"></div>
         </section>
 
-        <section class="sidebar-panel compact-panel">
-            <div class="sidebar-panel-header">
-                <span class="sidebar-section-label">Memories</span>
-                <button class="panel-action-btn" id="newMemoryBtn" type="button">Add</button>
-            </div>
-            <div class="memory-list" id="memoryList"></div>
-        </section>
-
         <div class="sidebar-bottom">
             <div class="model-section">
                 <label class="sidebar-section-label" for="modelSelect">Model</label>
@@ -116,6 +108,10 @@
                     <i class="fas fa-file-import"></i>
                 </button>
             </div>
+
+            <button class="secondary-wide-btn" id="memoryHubBtn" type="button">
+                <i class="fas fa-brain"></i> Memories
+            </button>
 
             <p class="privacy-note">Persona settings now persist by mode. Memories are saved to your account and available across sessions.</p>
         </div>
@@ -285,6 +281,22 @@
         <div class="modal-footer">
             <button class="modal-reset" id="memoryDelete" type="button">Delete</button>
             <button class="modal-save" id="memorySave" type="button">Save memory</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="memoryHubModal">
+    <div class="modal-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-brain"></i> Memory Library</span>
+            <button class="modal-close" id="memoryHubClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="sidebar-panel-header memory-hub-header">
+                <span class="setting-hint">Long-term details Sol can reuse across chats and sessions.</span>
+                <button class="panel-action-btn" id="newMemoryBtn" type="button">Add memory</button>
+            </div>
+            <div class="memory-hub-list" id="memoryList"></div>
         </div>
     </div>
 </div>

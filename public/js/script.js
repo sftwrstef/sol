@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentProjectChip = document.getElementById("currentProjectChip");
     const projectList = document.getElementById("projectList");
     const memoryList = document.getElementById("memoryList");
+    const memoryHubBtn = document.getElementById("memoryHubBtn");
+    const memoryHubModal = document.getElementById("memoryHubModal");
+    const memoryHubClose = document.getElementById("memoryHubClose");
     const topbarTitle = document.getElementById("topbarTitle");
     const newChatBtn = document.getElementById("newChatBtn");
     const newChatBtnMobile = document.getElementById("newChatBtnMobile");
@@ -583,6 +586,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         state.memories = await apiFetch("/api/memories");
+        memoryHubBtn.innerHTML = `<i class="fas fa-brain"></i> Memories${state.memories.length ? ` (${state.memories.length})` : ""}`;
         memoryList.innerHTML = "";
         if (!state.memories.length) {
             memoryList.innerHTML = '<div class="empty-panel-copy">Nothing saved yet.</div>';
@@ -770,6 +774,7 @@ document.addEventListener("DOMContentLoaded", () => {
         convList.innerHTML = "";
         projectList.innerHTML = "";
         memoryList.innerHTML = "";
+        memoryHubBtn.innerHTML = '<i class="fas fa-brain"></i> Memories';
         chatContainer.innerHTML = "";
         chatContainer.appendChild(createWelcome());
         updateCurrentProjectChip();
@@ -914,6 +919,14 @@ document.addEventListener("DOMContentLoaded", () => {
         state.editingMemoryId = null;
     }
 
+    function openMemoryHub() {
+        memoryHubModal.classList.add("open");
+    }
+
+    function closeMemoryHub() {
+        memoryHubModal.classList.remove("open");
+    }
+
     async function saveMemory() {
         memoryError.textContent = "";
         const payload = {
@@ -993,6 +1006,7 @@ document.addEventListener("DOMContentLoaded", () => {
     newChatBtnMobile.addEventListener("click", startNewChat);
     newProjectBtn.addEventListener("click", () => openProjectModal());
     newMemoryBtn.addEventListener("click", () => openMemoryModal());
+    memoryHubBtn.addEventListener("click", openMemoryHub);
 
     userInput.addEventListener("input", function onInput() {
         this.style.height = "auto";
@@ -1062,6 +1076,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     memorySave.addEventListener("click", saveMemory);
     memoryDelete.addEventListener("click", removeMemory);
+    memoryHubClose.addEventListener("click", closeMemoryHub);
+    memoryHubModal.addEventListener("click", (event) => {
+        if (event.target === memoryHubModal) closeMemoryHub();
+    });
 
     importBtn.addEventListener("click", openImportModal);
     importClose.addEventListener("click", closeImportModal);
