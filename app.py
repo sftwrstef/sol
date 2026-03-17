@@ -113,6 +113,8 @@ class UserPreference(db.Model):
     mode = db.Column(db.String(32), nullable=False, index=True)
     persona_name = db.Column(db.String(80), nullable=True)
     system_prompt = db.Column(db.Text, nullable=True)
+    voice_provider = db.Column(db.String(40), nullable=True)
+    voice_name = db.Column(db.String(120), nullable=True)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def to_dict(self):
@@ -120,6 +122,28 @@ class UserPreference(db.Model):
             "mode": self.mode,
             "persona_name": self.persona_name or "",
             "system_prompt": self.system_prompt or "",
+            "voice_provider": self.voice_provider or "browser",
+            "voice_name": self.voice_name or "",
+            "updated_at": self.updated_at.isoformat(),
+        }
+
+
+class Project(db.Model):
+    __tablename__ = "project"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description or "",
+            "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
         }
 
@@ -149,6 +173,7 @@ class Conversation(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=True, index=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("project.id", ondelete="SET NULL"), nullable=True, index=True)
     title = db.Column(db.String(200), default="New Chat", nullable=False)
     mode = db.Column(db.String(32), default="companion", nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -156,6 +181,7 @@ class Conversation(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "project_id": self.project_id,
             "title": self.title,
             "mode": self.mode,
             "created_at": self.created_at.isoformat(),
@@ -185,12 +211,27 @@ class Message(db.Model):
 def migrate_database():
     inspector = inspect(db.engine)
 
+    if "user_preference" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("user_preference")}
+        if "voice_provider" not in columns:
+            db.session.execute(text("ALTER TABLE user_preference ADD COLUMN voice_provider VARCHAR(40)"))
+        if "voice_name" not in columns:
+            db.session.execute(text("ALTER TABLE user_preference ADD COLUMN voice_name VARCHAR(120)"))
+
+    if "project" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("project")}
+        if "updated_at" not in columns:
+            db.session.execute(text("ALTER TABLE project ADD COLUMN updated_at DATETIME"))
+            db.session.execute(text("UPDATE project SET updated_at = created_at WHERE updated_at IS NULL"))
+
     if "conversation" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("conversation")}
         if "user_id" not in columns:
             db.session.execute(text("ALTER TABLE conversation ADD COLUMN user_id INTEGER"))
         if "mode" not in columns:
             db.session.execute(text("ALTER TABLE conversation ADD COLUMN mode VARCHAR(32) DEFAULT 'companion'"))
+        if "project_id" not in columns:
+            db.session.execute(text("ALTER TABLE conversation ADD COLUMN project_id INTEGER"))
         db.session.execute(text("UPDATE conversation SET mode = 'companion' WHERE mode IS NULL"))
 
     if "message" in inspector.get_table_names():
@@ -299,18 +340,24 @@ def memory_for_user(memory_id):
     return Memory.query.filter_by(id=memory_id, user_id=g.current_user.id).first_or_404()
 
 
+def project_for_user(project_id):
+    return Project.query.filter_by(id=project_id, user_id=g.current_user.id).first_or_404()
+
+
 def get_preference_map(user_id):
     preferences = UserPreference.query.filter_by(user_id=user_id).all()
     return {preference.mode: preference.to_dict() for preference in preferences}
 
 
-def upsert_preference(user_id, mode, persona_name, system_prompt):
+def upsert_preference(user_id, mode, persona_name, system_prompt, voice_provider, voice_name):
     preference = UserPreference.query.filter_by(user_id=user_id, mode=mode).first()
     if not preference:
         preference = UserPreference(user_id=user_id, mode=mode)
         db.session.add(preference)
     preference.persona_name = persona_name or ""
     preference.system_prompt = system_prompt or ""
+    preference.voice_provider = voice_provider or "browser"
+    preference.voice_name = voice_name or ""
     preference.updated_at = datetime.utcnow()
     db.session.commit()
     return preference
@@ -627,9 +674,11 @@ def index():
 def bootstrap():
     memories = []
     preferences = {}
+    projects = []
     if g.current_user:
         memories = [memory.to_dict() for memory in Memory.query.filter_by(user_id=g.current_user.id).order_by(Memory.updated_at.desc()).limit(20).all()]
         preferences = get_preference_map(g.current_user.id)
+        projects = [project.to_dict() for project in Project.query.filter_by(user_id=g.current_user.id).order_by(Project.updated_at.desc()).all()]
     return jsonify(
         {
             "authenticated": bool(g.current_user),
@@ -637,6 +686,7 @@ def bootstrap():
             "csrf_token": g.csrf_token,
             "preferences": preferences,
             "memories": memories,
+            "projects": projects,
         }
     )
 
@@ -705,9 +755,12 @@ def logout():
 @login_required_json
 def list_conversations():
     mode = request.args.get("mode")
+    project_id = request.args.get("project_id", type=int)
     query = Conversation.query.filter_by(user_id=g.current_user.id)
     if mode in {"companion", "coding"}:
         query = query.filter_by(mode=mode)
+    if project_id:
+        query = query.filter_by(project_id=project_id)
     conversations = query.order_by(Conversation.created_at.desc()).all()
     return jsonify([conversation.to_dict() for conversation in conversations])
 
@@ -717,10 +770,13 @@ def list_conversations():
 def create_conversation():
     data = request.get_json(silent=True) or {}
     mode = data.get("mode", "companion")
+    project_id = data.get("project_id")
     if mode not in {"companion", "coding"}:
         mode = "companion"
+    if project_id:
+        project_for_user(project_id)
 
-    conversation = Conversation(user_id=g.current_user.id, title="New Chat", mode=mode)
+    conversation = Conversation(user_id=g.current_user.id, project_id=project_id, title="New Chat", mode=mode)
     db.session.add(conversation)
     db.session.commit()
     return jsonify(conversation.to_dict()), 201
@@ -748,6 +804,12 @@ def rename_conversation(conv_id):
     mode = data.get("mode")
     if mode in {"companion", "coding"}:
         conversation.mode = mode
+
+    if "project_id" in data:
+        project_id = data.get("project_id")
+        if project_id:
+            project_for_user(project_id)
+        conversation.project_id = project_id or None
 
     db.session.commit()
     return jsonify(conversation.to_dict())
@@ -778,6 +840,8 @@ def save_preference(mode):
         mode,
         (data.get("persona_name") or "").strip()[:80],
         (data.get("system_prompt") or "").strip(),
+        (data.get("voice_provider") or "browser").strip()[:40],
+        (data.get("voice_name") or "").strip()[:120],
     )
     return jsonify(preference.to_dict())
 
@@ -791,6 +855,53 @@ def reset_preference(mode):
     if preference:
         db.session.delete(preference)
         db.session.commit()
+    return jsonify({"success": True})
+
+
+@app.route("/api/projects", methods=["GET"])
+@login_required_json
+def list_projects():
+    projects = Project.query.filter_by(user_id=g.current_user.id).order_by(Project.updated_at.desc()).all()
+    return jsonify([project.to_dict() for project in projects])
+
+
+@app.route("/api/projects", methods=["POST"])
+@login_required_json
+def create_project():
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or "").strip()[:120]
+    description = (data.get("description") or "").strip()
+    if not name:
+        return jsonify({"error": "Project name is required"}), 400
+    project = Project(user_id=g.current_user.id, name=name, description=description, updated_at=datetime.utcnow())
+    db.session.add(project)
+    db.session.commit()
+    return jsonify(project.to_dict()), 201
+
+
+@app.route("/api/projects/<int:project_id>", methods=["PATCH"])
+@login_required_json
+def update_project(project_id):
+    project = project_for_user(project_id)
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or project.name).strip()[:120]
+    description = (data.get("description") or project.description or "").strip()
+    if not name:
+        return jsonify({"error": "Project name is required"}), 400
+    project.name = name
+    project.description = description
+    project.updated_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify(project.to_dict())
+
+
+@app.route("/api/projects/<int:project_id>", methods=["DELETE"])
+@login_required_json
+def delete_project(project_id):
+    project = project_for_user(project_id)
+    Conversation.query.filter_by(project_id=project.id, user_id=g.current_user.id).update({"project_id": None})
+    db.session.delete(project)
+    db.session.commit()
     return jsonify({"success": True})
 
 
@@ -885,6 +996,7 @@ def chat():
     user_input = (data.get("message") or "").strip()
     voice_input = data.get("voice_data")
     conversation_id = data.get("conversation_id")
+    project_id = data.get("project_id")
     model_choice = data.get("model", "gpt-4.1")
     persona_name = (data.get("persona_name") or "").strip()
     custom_system_prompt = (data.get("system_prompt") or "").strip() or None
@@ -903,13 +1015,23 @@ def chat():
     conversation = None
     if conversation_id:
         conversation = Conversation.query.filter_by(id=conversation_id, user_id=g.current_user.id).first()
+    selected_project_id = None
+    if project_id:
+        selected_project_id = project_for_user(project_id).id
 
     if not conversation:
-        conversation = Conversation(user_id=g.current_user.id, title="New Chat", mode=mode)
+        conversation = Conversation(
+            user_id=g.current_user.id,
+            project_id=selected_project_id,
+            title="New Chat",
+            mode=mode,
+        )
         db.session.add(conversation)
         db.session.commit()
     else:
         conversation.mode = mode
+        if selected_project_id is not None:
+            conversation.project_id = selected_project_id
         db.session.commit()
 
     history = get_chat_history(conversation.id)
@@ -940,6 +1062,7 @@ def chat():
         "conversation_id": conversation.id,
         "conversation_title": conversation.title,
         "conversation_mode": conversation.mode,
+        "project_id": conversation.project_id,
     }
     if audio_data:
         result["audio"] = f"data:audio/mp3;base64,{audio_data}"

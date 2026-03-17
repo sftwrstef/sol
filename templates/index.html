@@ -65,6 +65,14 @@
 
         <section class="sidebar-panel compact-panel">
             <div class="sidebar-panel-header">
+                <span class="sidebar-section-label">Projects</span>
+                <button class="panel-action-btn" id="newProjectBtn" type="button">Add</button>
+            </div>
+            <div class="project-list" id="projectList"></div>
+        </section>
+
+        <section class="sidebar-panel compact-panel">
+            <div class="sidebar-panel-header">
                 <span class="sidebar-section-label">Memories</span>
                 <button class="panel-action-btn" id="newMemoryBtn" type="button">Add</button>
             </div>
@@ -173,6 +181,21 @@
                 <textarea id="personaPrompt" class="setting-textarea" rows="8" placeholder="Optional custom behavior for this workspace."></textarea>
                 <p class="setting-hint">Leave blank only if you want the built-in default for this mode.</p>
             </div>
+            <div class="setting-grid">
+                <div class="setting-group">
+                    <label class="setting-label" for="voiceProvider">Voice Provider</label>
+                    <select id="voiceProvider" class="setting-input">
+                        <option value="browser">Browser</option>
+                        <option value="elevenlabs">ElevenLabs</option>
+                        <option value="openai">OpenAI</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label class="setting-label" for="voiceName">Voice</label>
+                    <input type="text" id="voiceName" class="setting-input" maxlength="120" placeholder="ex: playful-female-01">
+                </div>
+            </div>
+            <p class="setting-hint">These are saved per mode so you can switch voices later without reconfiguring everything.</p>
             <div class="setting-group">
                 <label class="setting-label">Quick presets</label>
                 <div class="preset-row">
@@ -186,6 +209,30 @@
         <div class="modal-footer">
             <button class="modal-reset" id="settingsReset" type="button">Reset to default</button>
             <button class="modal-save" id="settingsSave" type="button">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="projectModal">
+    <div class="modal-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-folder-open"></i> Project</span>
+            <button class="modal-close" id="projectClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-group">
+                <label class="setting-label" for="projectName">Name</label>
+                <input type="text" id="projectName" class="setting-input" maxlength="120" placeholder="Launch plan">
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" for="projectDescription">Description</label>
+                <textarea id="projectDescription" class="setting-textarea" rows="5" placeholder="Optional context for grouping related chats."></textarea>
+            </div>
+            <p class="auth-error" id="projectError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-reset" id="projectDelete" type="button">Delete</button>
+            <button class="modal-save" id="projectSave" type="button">Save project</button>
         </div>
     </div>
 </div>
