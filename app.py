@@ -34,6 +34,7 @@ def env_flag(name, default=False):
 def normalize_database_url(url):
     if not url:
         return url
+    url = url.strip()
     if url.startswith("postgres://"):
         return "postgresql://" + url[len("postgres://"):]
     return url
