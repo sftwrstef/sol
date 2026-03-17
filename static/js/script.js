@@ -395,25 +395,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderProjectItem(project) {
-        const item = document.createElement("button");
+        const item = document.createElement("div");
         item.className = "project-item";
-        item.type = "button";
         item.dataset.id = project.id;
         item.classList.toggle("active", project.id === state.currentProjectId);
-        item.innerHTML = `
+        const trigger = document.createElement("button");
+        trigger.type = "button";
+        trigger.className = "project-select-btn";
+        trigger.innerHTML = `
             <span class="project-item-title">${project.name}</span>
             <span class="project-item-copy">${project.description || "Grouped chats and workstreams."}</span>
         `;
-        item.addEventListener("click", async () => {
+        trigger.addEventListener("click", async () => {
             state.currentProjectId = project.id;
             renderProjects();
             await loadConversations();
             startNewChat();
         });
-        item.addEventListener("contextmenu", (event) => {
-            event.preventDefault();
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "project-edit-btn";
+        editButton.innerHTML = '<i class="fas fa-pen"></i>';
+        editButton.addEventListener("click", (event) => {
+            event.stopPropagation();
             openProjectModal(project);
         });
+
+        item.append(trigger, editButton);
         return item;
     }
 
@@ -731,11 +740,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(payload),
             });
         } else {
-            const project = await apiFetch("/api/projects", {
+            await apiFetch("/api/projects", {
                 method: "POST",
                 body: JSON.stringify(payload),
             });
-            state.currentProjectId = project.id;
         }
         await loadProjects();
         await loadConversations();

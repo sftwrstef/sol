@@ -19,7 +19,7 @@
     --danger: #ff6b6b;
     --warning: rgba(255, 214, 102, 0.16);
     --radius: 16px;
-    --sidebar-w: clamp(268px, 22vw, 320px);
+    --sidebar-w: clamp(292px, 24vw, 344px);
     --content-w: 940px;
     --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
 }
@@ -252,6 +252,7 @@ button, input, textarea, select {
 .account-card {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     gap: 12px;
     padding: 12px;
     border: 1px solid var(--border);
@@ -274,6 +275,11 @@ button, input, textarea, select {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.account-logout {
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .account-logout,
@@ -373,7 +379,8 @@ button, input, textarea, select {
 }
 
 .memory-item,
-.project-item {
+.project-item,
+.project-select-btn {
     display: grid;
     gap: 4px;
     cursor: pointer;
@@ -408,6 +415,39 @@ button, input, textarea, select {
 
 .project-item.all-projects {
     background: rgba(255, 255, 255, 0.025);
+}
+
+.project-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px;
+}
+
+.project-select-btn {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    padding: 2px 4px;
+}
+
+.project-edit-btn {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+.project-edit-btn:hover {
+    color: var(--text);
+    border-color: rgba(188, 140, 255, 0.35);
 }
 
 .conv-delete {
@@ -838,7 +878,7 @@ button, input, textarea, select {
 
 @media (max-width: 1024px) {
     :root {
-        --sidebar-w: 280px;
+        --sidebar-w: 304px;
         --content-w: 860px;
     }
 }

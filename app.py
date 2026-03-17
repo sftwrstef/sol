@@ -456,6 +456,29 @@ def get_chat_history(conversation_id):
     msgs = Message.query.filter_by(conversation_id=conversation_id).order_by(Message.timestamp).all()
     return [{"role": message.role, "content": message.content} for message in msgs]
 
+
+def build_memory_context(user_id, limit=8):
+    memories = Memory.query.filter_by(user_id=user_id).order_by(Memory.updated_at.desc()).limit(limit).all()
+    if not memories:
+        return ""
+
+    lines = []
+    for memory in memories:
+        title = (memory.title or "").strip()
+        content = (memory.content or "").strip()
+        if not content:
+            continue
+        if title:
+            lines.append(f"- {title}: {content}")
+        else:
+            lines.append(f"- {content}")
+
+    if not lines:
+        return ""
+
+    return "Saved user memory:\n" + "\n".join(lines)
+
+
 def text_to_speech(text):
     try:
         from gtts import gTTS
@@ -1037,6 +1060,9 @@ def chat():
     history = get_chat_history(conversation.id)
     history.append({"role": "user", "content": user_input})
     system_prompt = build_system_prompt(mode, persona_name, custom_system_prompt)
+    memory_context = build_memory_context(g.current_user.id)
+    if memory_context:
+        system_prompt = f"{system_prompt}\n\n{memory_context}\nUse these memories when relevant, but do not mention them unless it helps."
     messages = [{"role": "system", "content": system_prompt}] + history
 
     reply = create_model_response(messages, model_choice)
