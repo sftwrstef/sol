@@ -34,7 +34,7 @@ def env_flag(name, default=False):
 def normalize_database_url(url):
     if not url:
         return url
-    url = url.strip()
+    url = url.strip().replace("\\n", "").replace("\n", "").replace("\r", "")
     if url.startswith("postgres://"):
         return "postgresql://" + url[len("postgres://"):]
     return url
@@ -441,10 +441,18 @@ def create_model_response(messages, model_choice):
 @app.route("/api/health")
 def health():
     import sys
+    raw_vars = {}
+    for key in ["DATABASE_URL", "DATABASE_POSTGRES_PRISMA_URL", "DATABASE_POSTGRES_URL", "SUPABASE_DB_URL"]:
+        val = os.environ.get(key)
+        if val:
+            # Show last 30 chars repr to find hidden characters
+            raw_vars[key] = repr(val[-30:]) if len(val) > 30 else repr(val)
     info = {
         "status": "ok",
         "python": sys.version,
+        "db_url_used": repr(database_url[-40:]) if len(database_url) > 40 else repr(database_url),
         "db_type": "postgresql" if database_url.startswith("postgresql") else "sqlite",
+        "env_vars_found": raw_vars,
         "vercel": bool(os.environ.get("VERCEL")),
     }
     try:
