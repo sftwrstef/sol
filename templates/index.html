@@ -18,10 +18,10 @@
     <div class="auth-card">
         <div class="auth-brand">Sol Space</div>
         <h1 class="auth-title">Your mind, amplified.</h1>
-        <p class="auth-subtitle">Encrypted conversations. Dual-mode intelligence. Built for those who build.</p>
+        <p class="auth-subtitle">Persistent identity, saved memories, and a workspace that does not forget who it is supposed to be.</p>
         <div class="auth-tabs">
-            <button class="auth-tab active" data-auth-mode="login" id="loginTab">Log in</button>
-            <button class="auth-tab" data-auth-mode="register" id="registerTab">Create account</button>
+            <button class="auth-tab active" data-auth-mode="login" id="loginTab" type="button">Log in</button>
+            <button class="auth-tab" data-auth-mode="register" id="registerTab" type="button">Create account</button>
         </div>
         <form class="auth-form" id="authForm">
             <label class="auth-label" for="authEmail">Email</label>
@@ -45,17 +45,31 @@
                 </div>
                 <button class="account-logout" id="logoutBtn" type="button">Log out</button>
             </div>
+
             <div class="mode-switch" id="modeSwitch">
                 <button class="mode-btn active" data-mode="companion" type="button">Companion</button>
                 <button class="mode-btn" data-mode="coding" type="button">Coding</button>
             </div>
+
             <button class="new-chat-btn" id="newChatBtn" type="button">
                 <i class="fas fa-plus"></i> New chat
             </button>
         </div>
 
-        <div class="sidebar-section-label">Recent</div>
-        <div class="conv-list" id="convList"></div>
+        <section class="sidebar-panel">
+            <div class="sidebar-panel-header">
+                <span class="sidebar-section-label">Recent</span>
+            </div>
+            <div class="conv-list" id="convList"></div>
+        </section>
+
+        <section class="sidebar-panel compact-panel">
+            <div class="sidebar-panel-header">
+                <span class="sidebar-section-label">Memories</span>
+                <button class="panel-action-btn" id="newMemoryBtn" type="button">Add</button>
+            </div>
+            <div class="memory-list" id="memoryList"></div>
+        </section>
 
         <div class="sidebar-bottom">
             <div class="model-section">
@@ -74,6 +88,7 @@
                     </optgroup>
                 </select>
             </div>
+
             <div class="toggle-row">
                 <button id="voiceToggle" class="tog-btn active" title="Voice input" type="button">
                     <i class="fas fa-microphone"></i>
@@ -84,8 +99,12 @@
                 <button id="settingsBtn" class="tog-btn" title="Customize persona" type="button">
                     <i class="fas fa-sliders"></i>
                 </button>
+                <button id="importBtn" class="tog-btn" title="Import chat backup" type="button">
+                    <i class="fas fa-file-import"></i>
+                </button>
             </div>
-            <p class="privacy-note">Chats are account-scoped. For production, move the database to managed Postgres and set real secrets.</p>
+
+            <p class="privacy-note">Persona settings now persist by mode. Memories are saved to your account and available across sessions.</p>
         </div>
     </aside>
 
@@ -105,8 +124,8 @@
         <div class="messages" id="chatContainer">
             <div class="welcome-block" id="welcomeBlock">
                 <div class="welcome-logo">Sol</div>
-                <h2 class="welcome-heading" id="welcomeHeading">What are we building?</h2>
-                <p class="welcome-sub" id="welcomeSub">Think out loud. Code in focus. Sol listens.</p>
+                <h2 class="welcome-heading" id="welcomeHeading">How can I help you today?</h2>
+                <p class="welcome-sub" id="welcomeSub">A calm workspace that remembers your configuration and keeps the surface focused.</p>
             </div>
         </div>
 
@@ -132,7 +151,7 @@
                     <i class="fas fa-arrow-up"></i>
                 </button>
             </div>
-            <p class="input-footer">End-to-end account-scoped. Your data never leaves your stack.</p>
+            <p class="input-footer">Mode settings persist until you change them. Imports bring over chat history, not OpenAI account-level memory state.</p>
         </div>
     </main>
 </div>
@@ -147,12 +166,12 @@
             <div class="setting-group">
                 <label class="setting-label" for="personaName">AI Name</label>
                 <input type="text" id="personaName" class="setting-input" placeholder="Sol" maxlength="40">
-                <p class="setting-hint">Name the assistant shown in this workspace.</p>
+                <p class="setting-hint">This is saved per mode and reused until you change it.</p>
             </div>
             <div class="setting-group">
                 <label class="setting-label" for="personaPrompt">System Prompt Override</label>
-                <textarea id="personaPrompt" class="setting-textarea" rows="7" placeholder="Optional custom behavior for this workspace."></textarea>
-                <p class="setting-hint">Leave blank to use the default prompt for the selected mode.</p>
+                <textarea id="personaPrompt" class="setting-textarea" rows="8" placeholder="Optional custom behavior for this workspace."></textarea>
+                <p class="setting-hint">Leave blank only if you want the built-in default for this mode.</p>
             </div>
             <div class="setting-group">
                 <label class="setting-label">Quick presets</label>
@@ -165,8 +184,53 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="modal-reset" id="settingsReset" type="button">Reset</button>
+            <button class="modal-reset" id="settingsReset" type="button">Reset to default</button>
             <button class="modal-save" id="settingsSave" type="button">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="memoryModal">
+    <div class="modal-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-brain"></i> Saved Memory</span>
+            <button class="modal-close" id="memoryClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-group">
+                <label class="setting-label" for="memoryTitle">Title</label>
+                <input type="text" id="memoryTitle" class="setting-input" maxlength="120" placeholder="What should Sol remember?">
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" for="memoryContent">Details</label>
+                <textarea id="memoryContent" class="setting-textarea" rows="7" placeholder="Preferences, goals, constraints, names, routines, anything useful."></textarea>
+            </div>
+            <p class="auth-error" id="memoryError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-reset" id="memoryDelete" type="button">Delete</button>
+            <button class="modal-save" id="memorySave" type="button">Save memory</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="importModal">
+    <div class="modal-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-file-import"></i> Import Chat Backup</span>
+            <button class="modal-close" id="importClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-group">
+                <label class="setting-label" for="importFile">ChatGPT export JSON</label>
+                <input type="file" id="importFile" class="setting-input" accept=".json,application/json">
+                <p class="setting-hint">This imports chat conversations from a ChatGPT export-style JSON backup into this app.</p>
+            </div>
+            <p class="auth-error" id="importError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-reset" id="importCancel" type="button">Cancel</button>
+            <button class="modal-save" id="importStart" type="button">Import</button>
         </div>
     </div>
 </div>

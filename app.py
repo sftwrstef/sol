@@ -1,4 +1,5 @@
 import base64
+import json
 import logging
 import os
 import random
@@ -102,6 +103,45 @@ class User(db.Model):
         }
 
 
+class UserPreference(db.Model):
+    __tablename__ = "user_preference"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    mode = db.Column(db.String(32), nullable=False, index=True)
+    persona_name = db.Column(db.String(80), nullable=True)
+    system_prompt = db.Column(db.Text, nullable=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "mode": self.mode,
+            "persona_name": self.persona_name or "",
+            "system_prompt": self.system_prompt or "",
+            "updated_at": self.updated_at.isoformat(),
+        }
+
+
+class Memory(db.Model):
+    __tablename__ = "memory"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    title = db.Column(db.String(120), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+        }
+
+
 class Conversation(db.Model):
     __tablename__ = "conversation"
 
@@ -155,6 +195,12 @@ def migrate_database():
         columns = {column["name"] for column in inspector.get_columns("message")}
         if "conversation_id" not in columns:
             db.session.execute(text("ALTER TABLE message ADD COLUMN conversation_id INTEGER"))
+
+    if "memory" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("memory")}
+        if "updated_at" not in columns:
+            db.session.execute(text("ALTER TABLE memory ADD COLUMN updated_at DATETIME"))
+            db.session.execute(text("UPDATE memory SET updated_at = created_at WHERE updated_at IS NULL"))
 
     db.session.commit()
 
@@ -245,6 +291,66 @@ def validate_password(password):
 
 def conversation_for_user(conv_id):
     return Conversation.query.filter_by(id=conv_id, user_id=g.current_user.id).first_or_404()
+
+
+def memory_for_user(memory_id):
+    return Memory.query.filter_by(id=memory_id, user_id=g.current_user.id).first_or_404()
+
+
+def get_preference_map(user_id):
+    preferences = UserPreference.query.filter_by(user_id=user_id).all()
+    return {preference.mode: preference.to_dict() for preference in preferences}
+
+
+def upsert_preference(user_id, mode, persona_name, system_prompt):
+    preference = UserPreference.query.filter_by(user_id=user_id, mode=mode).first()
+    if not preference:
+        preference = UserPreference(user_id=user_id, mode=mode)
+        db.session.add(preference)
+    preference.persona_name = persona_name or ""
+    preference.system_prompt = system_prompt or ""
+    preference.updated_at = datetime.utcnow()
+    db.session.commit()
+    return preference
+
+
+def extract_import_messages(payload):
+    conversations = []
+    items = payload.get("conversations") if isinstance(payload, dict) else payload
+    if not isinstance(items, list):
+        return conversations
+
+    for item in items:
+        title = (item.get("title") or item.get("name") or "Imported Chat").strip()
+        imported_messages = []
+
+        if isinstance(item.get("mapping"), dict):
+            mapping = item["mapping"]
+            nodes = [node for node in mapping.values() if isinstance(node, dict)]
+            nodes.sort(key=lambda node: (
+                node.get("message", {}).get("create_time") or 0,
+                node.get("id", ""),
+            ))
+            for node in nodes:
+                message = node.get("message") or {}
+                author = ((message.get("author") or {}).get("role") or "").lower()
+                parts = ((message.get("content") or {}).get("parts") or [])
+                text_parts = [part for part in parts if isinstance(part, str) and part.strip()]
+                if not text_parts or author not in {"user", "assistant"}:
+                    continue
+                imported_messages.append({"role": author, "content": "\n".join(text_parts).strip()})
+
+        elif isinstance(item.get("messages"), list):
+            for message in item["messages"]:
+                role = (message.get("role") or "").lower()
+                content = message.get("content") or ""
+                if role in {"user", "assistant"} and isinstance(content, str) and content.strip():
+                    imported_messages.append({"role": role, "content": content.strip()})
+
+        if imported_messages:
+            conversations.append({"title": title[:200], "messages": imported_messages})
+
+    return conversations
 
 
 def save_message(role, content, emotion=None, conversation_id=None):
@@ -474,11 +580,18 @@ def index():
 
 @app.route("/api/bootstrap", methods=["GET"])
 def bootstrap():
+    memories = []
+    preferences = {}
+    if g.current_user:
+        memories = [memory.to_dict() for memory in Memory.query.filter_by(user_id=g.current_user.id).order_by(Memory.updated_at.desc()).limit(20).all()]
+        preferences = get_preference_map(g.current_user.id)
     return jsonify(
         {
             "authenticated": bool(g.current_user),
             "user": g.current_user.to_dict() if g.current_user else None,
             "csrf_token": g.csrf_token,
+            "preferences": preferences,
+            "memories": memories,
         }
     )
 
@@ -601,6 +714,123 @@ def get_conversation_messages(conv_id):
     conversation_for_user(conv_id)
     messages = Message.query.filter_by(conversation_id=conv_id).order_by(Message.timestamp).all()
     return jsonify([message.to_dict() for message in messages])
+
+
+@app.route("/api/preferences", methods=["GET"])
+@login_required_json
+def list_preferences():
+    return jsonify(get_preference_map(g.current_user.id))
+
+
+@app.route("/api/preferences/<mode>", methods=["PUT"])
+@login_required_json
+def save_preference(mode):
+    if mode not in {"companion", "coding"}:
+        return jsonify({"error": "Invalid mode"}), 400
+    data = request.get_json(silent=True) or {}
+    preference = upsert_preference(
+        g.current_user.id,
+        mode,
+        (data.get("persona_name") or "").strip()[:80],
+        (data.get("system_prompt") or "").strip(),
+    )
+    return jsonify(preference.to_dict())
+
+
+@app.route("/api/preferences/<mode>", methods=["DELETE"])
+@login_required_json
+def reset_preference(mode):
+    if mode not in {"companion", "coding"}:
+        return jsonify({"error": "Invalid mode"}), 400
+    preference = UserPreference.query.filter_by(user_id=g.current_user.id, mode=mode).first()
+    if preference:
+        db.session.delete(preference)
+        db.session.commit()
+    return jsonify({"success": True})
+
+
+@app.route("/api/memories", methods=["GET"])
+@login_required_json
+def list_memories():
+    memories = Memory.query.filter_by(user_id=g.current_user.id).order_by(Memory.updated_at.desc()).all()
+    return jsonify([memory.to_dict() for memory in memories])
+
+
+@app.route("/api/memories", methods=["POST"])
+@login_required_json
+def create_memory():
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()[:120]
+    content = (data.get("content") or "").strip()
+    if not title or not content:
+        return jsonify({"error": "Title and content are required"}), 400
+    memory = Memory(user_id=g.current_user.id, title=title, content=content, updated_at=datetime.utcnow())
+    db.session.add(memory)
+    db.session.commit()
+    return jsonify(memory.to_dict()), 201
+
+
+@app.route("/api/memories/<int:memory_id>", methods=["PATCH"])
+@login_required_json
+def update_memory(memory_id):
+    memory = memory_for_user(memory_id)
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or memory.title).strip()[:120]
+    content = (data.get("content") or memory.content).strip()
+    if not title or not content:
+        return jsonify({"error": "Title and content are required"}), 400
+    memory.title = title
+    memory.content = content
+    memory.updated_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify(memory.to_dict())
+
+
+@app.route("/api/memories/<int:memory_id>", methods=["DELETE"])
+@login_required_json
+def delete_memory(memory_id):
+    memory = memory_for_user(memory_id)
+    db.session.delete(memory)
+    db.session.commit()
+    return jsonify({"success": True})
+
+
+@app.route("/api/import/chatgpt", methods=["POST"])
+@login_required_json
+def import_chatgpt_backup():
+    uploaded_file = request.files.get("file")
+    payload = None
+    if uploaded_file:
+        payload = json.load(uploaded_file.stream)
+    else:
+        data = request.get_json(silent=True) or {}
+        payload = data.get("payload")
+
+    conversations = extract_import_messages(payload)
+    if not conversations:
+        return jsonify({"error": "No importable conversations were found in that backup"}), 400
+
+    created = 0
+    for imported in conversations[:50]:
+        conversation = Conversation(
+            user_id=g.current_user.id,
+            title=imported["title"] or "Imported Chat",
+            mode="companion",
+        )
+        db.session.add(conversation)
+        db.session.flush()
+        for message in imported["messages"][:400]:
+            db.session.add(
+                Message(
+                    conversation_id=conversation.id,
+                    role=message["role"],
+                    content=message["content"],
+                )
+            )
+        created += 1
+
+    db.session.commit()
+    return jsonify({"success": True, "imported_conversations": created})
 
 
 @app.route("/api/chat", methods=["POST"])
