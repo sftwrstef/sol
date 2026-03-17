@@ -35,6 +35,8 @@ def normalize_database_url(url):
     if not url:
         return url
     url = url.strip().replace("\\n", "").replace("\n", "").replace("\r", "")
+    # Remove pgbouncer param (Prisma-specific, breaks psycopg2)
+    url = url.replace("?pgbouncer=true&", "?").replace("&pgbouncer=true", "").replace("?pgbouncer=true", "")
     if url.startswith("postgres://"):
         return "postgresql://" + url[len("postgres://"):]
     return url
@@ -42,8 +44,8 @@ def normalize_database_url(url):
 
 _raw_db_url = (
     os.environ.get("DATABASE_URL")
-    or os.environ.get("DATABASE_POSTGRES_PRISMA_URL")
     or os.environ.get("DATABASE_POSTGRES_URL")
+    or os.environ.get("DATABASE_POSTGRES_PRISMA_URL")
     or os.environ.get("SUPABASE_DB_URL")
 )
 
