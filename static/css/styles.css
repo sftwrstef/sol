@@ -459,6 +459,7 @@ button, input, textarea, select {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
 }
 
 .project-item {

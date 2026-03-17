@@ -212,7 +212,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateCurrentProjectChip() {
-        currentProjectChip.textContent = state.currentProjectId ? `Project: ${currentProjectName()}` : "All chats";
+        currentProjectChip.textContent = state.currentProjectId ? `Project: ${currentProjectName()} · Show all` : "All chats";
+    }
+
+    async function clearProjectFilter() {
+        state.currentProjectId = null;
+        renderProjects();
+        updateCurrentProjectChip();
+        await loadConversations();
+        startNewChat();
     }
 
     function updateModeUI() {
@@ -504,13 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="project-item-title">All chats</span>
             <span class="project-item-copy">No project filter.</span>
         `;
-        allButton.addEventListener("click", async () => {
-            state.currentProjectId = null;
-            renderProjects();
-            updateCurrentProjectChip();
-            await loadConversations();
-            startNewChat();
-        });
+        allButton.addEventListener("click", clearProjectFilter);
         projectList.appendChild(allButton);
 
         if (!state.projects.length) {
@@ -951,6 +953,11 @@ document.addEventListener("DOMContentLoaded", () => {
     authForm.addEventListener("submit", handleAuthSubmit);
     profileBtn.addEventListener("click", openProfileModal);
     logoutBtn.addEventListener("click", handleLogout);
+    currentProjectChip.addEventListener("click", () => {
+        if (state.currentProjectId) {
+            clearProjectFilter();
+        }
+    });
 
     sidebarToggle.addEventListener("click", openSidebar);
     sidebarOverlay.addEventListener("click", closeSidebar);
