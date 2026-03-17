@@ -41,9 +41,13 @@
             <div class="account-card">
                 <div class="account-copy">
                     <span class="account-label">Signed in</span>
+                    <strong class="account-name" id="accountName"></strong>
                     <strong class="account-email" id="accountEmail"></strong>
                 </div>
-                <button class="account-logout" id="logoutBtn" type="button">Log out</button>
+                <div class="account-actions">
+                    <button class="panel-action-btn" id="profileBtn" type="button">Profile</button>
+                    <button class="account-logout" id="logoutBtn" type="button">Log out</button>
+                </div>
             </div>
 
             <div class="mode-switch" id="modeSwitch">
@@ -57,6 +61,7 @@
         </div>
 
         <section class="sidebar-panel">
+            <div class="current-project-chip" id="currentProjectChip">All chats</div>
             <div class="sidebar-panel-header">
                 <span class="sidebar-section-label">Recent</span>
             </div>
@@ -132,8 +137,8 @@
         <div class="messages" id="chatContainer">
             <div class="welcome-block" id="welcomeBlock">
                 <div class="welcome-logo">Sol</div>
-                <h2 class="welcome-heading" id="welcomeHeading">How can I help you today?</h2>
-                <p class="welcome-sub" id="welcomeSub">A lively space for chat, ideas, and whatever rabbit hole you want to go down next.</p>
+                <h2 class="welcome-heading" id="welcomeHeading">Your mind, amplified.</h2>
+                <p class="welcome-sub" id="welcomeSub">Persistent memory, private conversations, and a workspace that keeps up with you.</p>
             </div>
         </div>
 
@@ -162,6 +167,29 @@
             <p class="input-footer">Mode settings persist until you change them. Private, account-scoped, and encrypted in transit.</p>
         </div>
     </main>
+</div>
+
+<div class="modal-overlay" id="profileModal">
+    <div class="modal-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-user"></i> Profile</span>
+            <button class="modal-close" id="profileClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-group">
+                <label class="setting-label" for="profileName">Name</label>
+                <input type="text" id="profileName" class="setting-input" maxlength="120" placeholder="Stefany">
+            </div>
+            <div class="setting-group">
+                <label class="setting-label" for="profileAbout">About me</label>
+                <textarea id="profileAbout" class="setting-textarea" rows="6" placeholder="Who you are, how you like Sol to talk to you, what matters right now."></textarea>
+            </div>
+            <p class="auth-error" id="profileError"></p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-save" id="profileSave" type="button">Save profile</button>
+        </div>
+    </div>
 </div>
 
 <div class="modal-overlay" id="settingsModal">

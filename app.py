@@ -94,6 +94,8 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    display_name = db.Column(db.String(120), nullable=True)
+    about_me = db.Column(db.Text, nullable=True)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
@@ -101,6 +103,8 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "display_name": self.display_name or "",
+            "about_me": self.about_me or "",
             "created_at": self.created_at.isoformat(),
         }
 
@@ -210,6 +214,13 @@ class Message(db.Model):
 
 def migrate_database():
     inspector = inspect(db.engine)
+
+    if "user" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("user")}
+        if "display_name" not in columns:
+            db.session.execute(text("ALTER TABLE user ADD COLUMN display_name VARCHAR(120)"))
+        if "about_me" not in columns:
+            db.session.execute(text("ALTER TABLE user ADD COLUMN about_me TEXT"))
 
     if "user_preference" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("user_preference")}
@@ -772,6 +783,16 @@ def logout():
     session.clear()
     session["csrf_token"] = secrets.token_urlsafe(24)
     return jsonify({"success": True, "csrf_token": session["csrf_token"]})
+
+
+@app.route("/api/profile", methods=["PATCH"])
+@login_required_json
+def update_profile():
+    data = request.get_json(silent=True) or {}
+    g.current_user.display_name = (data.get("display_name") or "").strip()[:120]
+    g.current_user.about_me = (data.get("about_me") or "").strip()
+    db.session.commit()
+    return jsonify(g.current_user.to_dict())
 
 
 @app.route("/api/conversations", methods=["GET"])

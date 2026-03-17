@@ -26,13 +26,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const authHint = document.getElementById("authHint");
     const authSubmit = document.getElementById("authSubmit");
     const authTabs = document.querySelectorAll(".auth-tab");
+    const accountName = document.getElementById("accountName");
     const accountEmail = document.getElementById("accountEmail");
+    const profileBtn = document.getElementById("profileBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
     const sidebar = document.getElementById("sidebar");
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
     const convList = document.getElementById("convList");
+    const currentProjectChip = document.getElementById("currentProjectChip");
     const projectList = document.getElementById("projectList");
     const memoryList = document.getElementById("memoryList");
     const topbarTitle = document.getElementById("topbarTitle");
@@ -59,6 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const audioToggle = document.getElementById("audioToggle");
 
     const settingsBtn = document.getElementById("settingsBtn");
+    const profileModal = document.getElementById("profileModal");
+    const profileClose = document.getElementById("profileClose");
+    const profileSave = document.getElementById("profileSave");
+    const profileName = document.getElementById("profileName");
+    const profileAbout = document.getElementById("profileAbout");
+    const profileError = document.getElementById("profileError");
     const settingsModal = document.getElementById("settingsModal");
     const settingsClose = document.getElementById("settingsClose");
     const settingsSave = document.getElementById("settingsSave");
@@ -181,13 +190,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const heading = document.createElement("h2");
         heading.className = "welcome-heading";
-        heading.textContent = state.currentMode === "coding" ? "What are we building?" : "How can I help you today?";
+        heading.textContent = state.currentMode === "coding" ? "What are we building?" : "Your mind, amplified.";
 
         const sub = document.createElement("p");
         sub.className = "welcome-sub";
         sub.textContent = state.currentMode === "coding"
             ? "Debug, review architecture, draft code, and plan production launches."
-            : "A lively space for chat, ideas, and whatever rabbit hole you want to go down next.";
+            : "Persistent memory, private conversations, and a workspace that keeps up with you.";
 
         block.appendChild(logo);
         block.appendChild(heading);
@@ -202,16 +211,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return state.projects.find((project) => project.id === state.currentProjectId)?.name || "Project";
     }
 
+    function updateCurrentProjectChip() {
+        currentProjectChip.textContent = state.currentProjectId ? `Project: ${currentProjectName()}` : "All chats";
+    }
+
     function updateModeUI() {
         const isCoding = state.currentMode === "coding";
         modeBadge.textContent = isCoding ? "Coding Mode" : "Chat Mode";
         composerTip.textContent = isCoding
             ? "Focused on debugging, architecture, implementation, and code review."
             : "Private chat, ideas, and everyday chaos.";
-        welcomeHeading.textContent = isCoding ? "What are we building?" : "How can I help you today?";
+        welcomeHeading.textContent = isCoding ? "What are we building?" : "Your mind, amplified.";
         welcomeSub.textContent = isCoding
             ? "Debug, review architecture, draft code, and plan production launches."
-            : "A lively space for chat, ideas, and whatever rabbit hole you want to go down next.";
+            : "Persistent memory, private conversations, and a workspace that keeps up with you.";
         userInput.placeholder = isCoding ? "Paste code or ask a coding question..." : "Message Sol...";
         audioToggle.disabled = isCoding;
         audioToggle.classList.toggle("disabled", isCoding);
@@ -252,6 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (state.user) {
             authShell.classList.add("hidden");
             appShell.classList.remove("hidden");
+            accountName.textContent = state.user.display_name || "Sol account";
             accountEmail.textContent = state.user.email;
             updateModeUI();
         } else {
@@ -363,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatContainer.appendChild(createWelcome());
         document.querySelectorAll(".conv-item").forEach((el) => el.classList.remove("active"));
         topbarTitle.textContent = state.currentMode === "coding" ? `${currentProjectName()} / Coding` : currentProjectName();
+        updateCurrentProjectChip();
         closeSidebar();
     }
 
@@ -389,7 +404,30 @@ document.addEventListener("DOMContentLoaded", () => {
             await loadConversations();
         });
 
-        item.append(title, deleteButton);
+        const projectAssign = document.createElement("select");
+        projectAssign.className = "conv-project-select";
+        projectAssign.innerHTML = '<option value="">No project</option>';
+        state.projects.forEach((project) => {
+            const option = document.createElement("option");
+            option.value = String(project.id);
+            option.textContent = project.name;
+            option.selected = project.id === conversation.project_id;
+            projectAssign.appendChild(option);
+        });
+        projectAssign.addEventListener("click", (event) => event.stopPropagation());
+        projectAssign.addEventListener("change", async (event) => {
+            await apiFetch(`/api/conversations/${conversation.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ project_id: event.target.value ? Number(event.target.value) : null }),
+            });
+            await loadConversations();
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "conv-actions";
+        actions.append(projectAssign, deleteButton);
+
+        item.append(title, actions);
         item.addEventListener("click", () => loadConversation(conversation.id));
         return item;
     }
@@ -440,6 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
         allButton.addEventListener("click", async () => {
             state.currentProjectId = null;
             renderProjects();
+            updateCurrentProjectChip();
             await loadConversations();
             startNewChat();
         });
@@ -454,6 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         state.projects.forEach((project) => projectList.appendChild(renderProjectItem(project)));
+        updateCurrentProjectChip();
     }
 
     function renderMemoryItem(memory) {
@@ -625,6 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateAuthenticatedUI();
         if (state.user) {
             renderProjects();
+            updateCurrentProjectChip();
             await loadConversations();
             await loadMemories();
             startNewChat();
@@ -672,7 +713,37 @@ document.addEventListener("DOMContentLoaded", () => {
         memoryList.innerHTML = "";
         chatContainer.innerHTML = "";
         chatContainer.appendChild(createWelcome());
+        updateCurrentProjectChip();
         updateAuthenticatedUI();
+    }
+
+    function openProfileModal() {
+        profileName.value = state.user?.display_name || "";
+        profileAbout.value = state.user?.about_me || "";
+        profileError.textContent = "";
+        profileModal.classList.add("open");
+    }
+
+    function closeProfileModal() {
+        profileModal.classList.remove("open");
+    }
+
+    async function saveProfile() {
+        profileError.textContent = "";
+        try {
+            const user = await apiFetch("/api/profile", {
+                method: "PATCH",
+                body: JSON.stringify({
+                    display_name: profileName.value.trim(),
+                    about_me: profileAbout.value.trim(),
+                }),
+            });
+            state.user = user;
+            updateAuthenticatedUI();
+            closeProfileModal();
+        } catch (error) {
+            profileError.textContent = error.message;
+        }
     }
 
     function openSettings() {
@@ -849,6 +920,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     authTabs.forEach((tab) => tab.addEventListener("click", () => updateAuthMode(tab.dataset.authMode)));
     authForm.addEventListener("submit", handleAuthSubmit);
+    profileBtn.addEventListener("click", openProfileModal);
     logoutBtn.addEventListener("click", handleLogout);
 
     sidebarToggle.addEventListener("click", openSidebar);
@@ -913,6 +985,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     projectSave.addEventListener("click", saveProject);
     projectDelete.addEventListener("click", removeProject);
+
+    profileClose.addEventListener("click", closeProfileModal);
+    profileModal.addEventListener("click", (event) => {
+        if (event.target === profileModal) closeProfileModal();
+    });
+    profileSave.addEventListener("click", saveProfile);
 
     memoryClose.addEventListener("click", closeMemoryModal);
     memoryModal.addEventListener("click", (event) => {

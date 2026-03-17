@@ -264,6 +264,11 @@ button, input, textarea, select {
     min-width: 0;
 }
 
+.account-name {
+    display: block;
+    margin-bottom: 4px;
+}
+
 .account-label {
     display: block;
     font-size: 0.74rem;
@@ -280,6 +285,12 @@ button, input, textarea, select {
 .account-logout {
     flex-shrink: 0;
     white-space: nowrap;
+}
+
+.account-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .account-logout,
@@ -378,6 +389,22 @@ button, input, textarea, select {
     cursor: pointer;
 }
 
+.conv-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.conv-project-select {
+    max-width: 112px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-dim);
+    border-radius: 10px;
+    padding: 6px 8px;
+}
+
 .memory-item,
 .project-item,
 .project-select-btn {
@@ -415,6 +442,23 @@ button, input, textarea, select {
 
 .project-item.all-projects {
     background: rgba(255, 255, 255, 0.025);
+}
+
+.current-project-chip {
+    margin: 0 4px 10px;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .project-item {
@@ -981,6 +1025,14 @@ button, input, textarea, select {
         align-items: stretch;
     }
 
+    .account-actions {
+        width: 100%;
+    }
+
+    .account-actions > button {
+        flex: 1;
+    }
+
     .composer-meta {
         flex-direction: column;
         align-items: flex-start;
@@ -1002,6 +1054,21 @@ button, input, textarea, select {
     .conv-list {
         max-height: none;
         padding-right: 0;
+    }
+
+    .conv-item {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .conv-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .conv-project-select {
+        max-width: none;
+        flex: 1;
     }
 
     .setting-grid {
