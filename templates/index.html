@@ -68,43 +68,13 @@
         </section>
 
         <div class="sidebar-bottom">
-            <div class="model-section">
-                <label class="sidebar-section-label" for="modelSelect">Model</label>
-                <select id="modelSelect" class="model-select">
-                    <optgroup label="OpenAI">
-                        <option value="gpt-4.1">GPT-4.1</option>
-                        <option value="gpt-4o">GPT-4o</option>
-                    </optgroup>
-                    <optgroup label="Anthropic">
-                        <option value="claude-sonnet">Claude 3.5 Sonnet</option>
-                        <option value="claude-opus">Claude 3 Opus</option>
-                    </optgroup>
-                    <optgroup label="Free">
-                        <option value="free">Llama 3.1 (OpenRouter Free)</option>
-                    </optgroup>
-                </select>
-            </div>
-
-            <div class="toggle-row">
-                <button id="voiceToggle" class="tog-btn active" title="Voice input" type="button">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button id="audioToggle" class="tog-btn" title="Voice responses" type="button">
-                    <i class="fas fa-volume-up"></i>
-                </button>
-                <button id="settingsBtn" class="tog-btn" title="Customize persona" type="button">
-                    <i class="fas fa-sliders"></i>
-                </button>
-                <button id="importBtn" class="tog-btn" title="Import chat backup" type="button">
-                    <i class="fas fa-file-import"></i>
-                </button>
-            </div>
+            <button class="secondary-wide-btn" id="quickControlsBtn" type="button">
+                <i class="fas fa-sliders"></i> Controls
+            </button>
 
             <button class="secondary-wide-btn" id="memoryHubBtn" type="button">
                 <i class="fas fa-brain"></i> Memories
             </button>
-
-            <p class="privacy-note">Persona settings now persist by mode. Memories are saved to your account and available across sessions.</p>
         </div>
     </aside>
 
@@ -116,9 +86,14 @@
                 <i class="fas fa-bars"></i>
             </button>
             <span class="topbar-title" id="topbarTitle">Sol Space</span>
-            <button class="topbar-btn" id="newChatBtnMobile" type="button">
-                <i class="fas fa-pen-to-square"></i>
-            </button>
+            <div class="topbar-actions">
+                <button class="topbar-btn" id="quickControlsBtnMobile" type="button">
+                    <i class="fas fa-sliders"></i>
+                </button>
+                <button class="topbar-btn" id="newChatBtnMobile" type="button">
+                    <i class="fas fa-pen-to-square"></i>
+                </button>
+            </div>
         </div>
 
         <div class="messages" id="chatContainer">
@@ -224,6 +199,50 @@
         <div class="modal-footer">
             <button class="modal-reset" id="settingsReset" type="button">Reset to default</button>
             <button class="modal-save" id="settingsSave" type="button">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay quick-sheet" id="quickControlsModal">
+    <div class="modal-panel quick-sheet-panel">
+        <div class="modal-header">
+            <span class="modal-title"><i class="fas fa-sliders"></i> Quick Settings</span>
+            <button class="modal-close" id="quickControlsClose" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="model-section">
+                <label class="sidebar-section-label" for="modelSelect">Model</label>
+                <select id="modelSelect" class="model-select">
+                    <optgroup label="OpenAI">
+                        <option value="gpt-4.1">GPT-4.1</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                    </optgroup>
+                    <optgroup label="Anthropic">
+                        <option value="claude-sonnet">Claude 3.5 Sonnet</option>
+                        <option value="claude-opus">Claude 3 Opus</option>
+                    </optgroup>
+                    <optgroup label="Free">
+                        <option value="free">Llama 3.1 (OpenRouter Free)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="toggle-row quick-toggle-row">
+                <button id="voiceToggle" class="tog-btn active" title="Voice input" type="button">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="audioToggle" class="tog-btn" title="Voice responses" type="button">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button id="settingsBtn" class="tog-btn" title="Customize persona" type="button">
+                    <i class="fas fa-sliders"></i>
+                </button>
+                <button id="importBtn" class="tog-btn" title="Import chat backup" type="button">
+                    <i class="fas fa-file-import"></i>
+                </button>
+            </div>
+
+            <p class="privacy-note">Persona settings persist by mode. Memories stay account-scoped across sessions.</p>
         </div>
     </div>
 </div>

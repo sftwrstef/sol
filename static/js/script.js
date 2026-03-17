@@ -36,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const memoryHubBtn = document.getElementById("memoryHubBtn");
     const memoryHubModal = document.getElementById("memoryHubModal");
     const memoryHubClose = document.getElementById("memoryHubClose");
+    const quickControlsBtn = document.getElementById("quickControlsBtn");
+    const quickControlsBtnMobile = document.getElementById("quickControlsBtnMobile");
+    const quickControlsModal = document.getElementById("quickControlsModal");
+    const quickControlsClose = document.getElementById("quickControlsClose");
     const topbarTitle = document.getElementById("topbarTitle");
     const newChatBtn = document.getElementById("newChatBtn");
     const newChatBtnMobile = document.getElementById("newChatBtnMobile");
@@ -96,11 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function openSidebar() {
         sidebar.classList.add("open");
         sidebarOverlay.classList.add("open");
+        document.body.classList.add("sidebar-open");
     }
 
     function closeSidebar() {
         sidebar.classList.remove("open");
         sidebarOverlay.classList.remove("open");
+        document.body.classList.remove("sidebar-open");
     }
 
     function updateAuthMode(nextMode) {
@@ -733,6 +739,15 @@ document.addEventListener("DOMContentLoaded", () => {
         memoryHubModal.classList.remove("open");
     }
 
+    function openQuickControls() {
+        quickControlsModal.classList.add("open");
+        closeSidebar();
+    }
+
+    function closeQuickControls() {
+        quickControlsModal.classList.remove("open");
+    }
+
     async function saveMemory() {
         memoryError.textContent = "";
         const payload = {
@@ -807,6 +822,8 @@ document.addEventListener("DOMContentLoaded", () => {
     newChatBtnMobile.addEventListener("click", startNewChat);
     newMemoryBtn.addEventListener("click", () => openMemoryModal());
     memoryHubBtn.addEventListener("click", openMemoryHub);
+    quickControlsBtn.addEventListener("click", openQuickControls);
+    quickControlsBtnMobile.addEventListener("click", openQuickControls);
 
     userInput.addEventListener("input", function onInput() {
         this.style.height = "auto";
@@ -872,6 +889,10 @@ document.addEventListener("DOMContentLoaded", () => {
     memoryHubClose.addEventListener("click", closeMemoryHub);
     memoryHubModal.addEventListener("click", (event) => {
         if (event.target === memoryHubModal) closeMemoryHub();
+    });
+    quickControlsClose.addEventListener("click", closeQuickControls);
+    quickControlsModal.addEventListener("click", (event) => {
+        if (event.target === quickControlsModal) closeQuickControls();
     });
 
     importBtn.addEventListener("click", openImportModal);
