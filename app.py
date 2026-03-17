@@ -1,4 +1,5 @@
 import base64
+import io
 import json
 import logging
 import os
@@ -6,6 +7,7 @@ import random
 import secrets
 import subprocess
 import tempfile
+import zipfile
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -62,7 +64,7 @@ app = Flask(__name__, static_folder="public", static_url_path="")
 app.config["SECRET_KEY"] = os.environ.get("SESSION_SECRET") or secrets.token_hex(32)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = os.environ.get("SESSION_COOKIE_SAMESITE", "Lax")
 app.config["SESSION_COOKIE_SECURE"] = env_flag("SESSION_COOKIE_SECURE", env_flag("FLASK_ENV") or env_flag("PRODUCTION"))
@@ -351,6 +353,49 @@ def extract_import_messages(payload):
             conversations.append({"title": title[:200], "messages": imported_messages})
 
     return conversations
+
+
+def parse_json_bytes(raw_bytes):
+    if not raw_bytes:
+        return None
+
+    for encoding in ("utf-8", "utf-8-sig", "latin-1"):
+        try:
+            return json.loads(raw_bytes.decode(encoding))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+    return None
+
+
+def load_import_payload(uploaded_file):
+    if not uploaded_file:
+        return None
+
+    filename = (uploaded_file.filename or "").lower()
+    raw_bytes = uploaded_file.read()
+    uploaded_file.stream.seek(0)
+
+    if filename.endswith(".zip"):
+        try:
+            with zipfile.ZipFile(io.BytesIO(raw_bytes)) as archive:
+                preferred = [
+                    name for name in archive.namelist()
+                    if name.lower().endswith("conversations.json")
+                ]
+                candidates = preferred or [
+                    name for name in archive.namelist()
+                    if name.lower().endswith(".json")
+                ]
+
+                for name in candidates:
+                    payload = parse_json_bytes(archive.read(name))
+                    if extract_import_messages(payload):
+                        return payload
+        except zipfile.BadZipFile:
+            return None
+        return None
+
+    return parse_json_bytes(raw_bytes)
 
 
 def save_message(role, content, emotion=None, conversation_id=None):
@@ -801,14 +846,14 @@ def import_chatgpt_backup():
     uploaded_file = request.files.get("file")
     payload = None
     if uploaded_file:
-        payload = json.load(uploaded_file.stream)
+        payload = load_import_payload(uploaded_file)
     else:
         data = request.get_json(silent=True) or {}
         payload = data.get("payload")
 
     conversations = extract_import_messages(payload)
     if not conversations:
-        return jsonify({"error": "No importable conversations were found in that backup"}), 400
+        return jsonify({"error": "No importable conversations were found. Upload the ChatGPT export zip or a conversations.json file."}), 400
 
     created = 0
     for imported in conversations[:50]:

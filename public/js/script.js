@@ -657,7 +657,7 @@ document.addEventListener("DOMContentLoaded", () => {
         importError.textContent = "";
         const file = importFile.files?.[0];
         if (!file) {
-            importError.textContent = "Choose a JSON export first.";
+            importError.textContent = "Choose the ChatGPT export zip or conversations.json first.";
             return;
         }
         const formData = new FormData();
