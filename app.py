@@ -45,8 +45,8 @@ def normalize_database_url(url):
 
 _raw_db_url = (
     os.environ.get("DATABASE_URL")
-    or os.environ.get("DATABASE_POSTGRES_URL")
     or os.environ.get("DATABASE_POSTGRES_PRISMA_URL")
+    or os.environ.get("DATABASE_POSTGRES_URL")
     or os.environ.get("SUPABASE_DB_URL")
 )
 
