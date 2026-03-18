@@ -477,6 +477,10 @@ def get_chat_history(conversation_id):
     return [{"role": message.role, "content": message.content} for message in msgs]
 
 
+def get_message_records(conversation_id):
+    return Message.query.filter_by(conversation_id=conversation_id).order_by(Message.timestamp, Message.id).all()
+
+
 def build_memory_context(user_id, limit=8):
     memories = Memory.query.filter_by(user_id=user_id).order_by(Memory.updated_at.desc()).limit(limit).all()
     if not memories:
@@ -1143,6 +1147,7 @@ def chat():
     model_choice = data.get("model", "gpt-4o")
     persona_name = (data.get("persona_name") or "").strip()
     custom_system_prompt = (data.get("system_prompt") or "").strip() or None
+    regenerate = bool(data.get("regenerate"))
     mode = data.get("mode", "companion")
     if mode not in {"companion", "coding"}:
         mode = "companion"
@@ -1152,7 +1157,7 @@ def chat():
         if not user_input:
             return jsonify({"error": "Could not understand audio. Please try again."}), 400
 
-    if not user_input:
+    if not user_input and not regenerate:
         return jsonify({"error": "No message provided"}), 400
 
     conversation = None
@@ -1177,8 +1182,22 @@ def chat():
             conversation.project_id = selected_project_id
         db.session.commit()
 
-    history = get_chat_history(conversation.id)
-    history.append({"role": "user", "content": user_input})
+    existing_messages = get_message_records(conversation.id)
+    if regenerate:
+        if not existing_messages:
+            return jsonify({"error": "Nothing to regenerate yet."}), 400
+        if existing_messages[-1].role == "assistant":
+            db.session.delete(existing_messages[-1])
+            db.session.commit()
+            existing_messages = existing_messages[:-1]
+        last_user = next((message for message in reversed(existing_messages) if message.role == "user"), None)
+        if not last_user:
+            return jsonify({"error": "Need a user message before regenerating."}), 400
+        user_input = last_user.content
+        history = [{"role": message.role, "content": message.content} for message in existing_messages]
+    else:
+        history = [{"role": message.role, "content": message.content} for message in existing_messages]
+        history.append({"role": "user", "content": user_input})
     system_prompt = build_system_prompt(mode, persona_name, custom_system_prompt)
     profile_context = build_profile_context(g.current_user)
     if profile_context:
@@ -1200,7 +1219,8 @@ def chat():
             conversation.title += "…"
         db.session.commit()
 
-    save_message("user", user_input, None, conversation.id)
+    if not regenerate:
+        save_message("user", user_input, None, conversation.id)
     save_message("assistant", reply, None, conversation.id)
 
     memory_suggestion = None

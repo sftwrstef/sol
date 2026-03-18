@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         preferences: {},
         memories: [],
         editingMemoryId: null,
+        regenerateModelOverride: "",
     };
 
     const authShell = document.getElementById("authShell");
@@ -278,7 +279,48 @@ document.addEventListener("DOMContentLoaded", () => {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    function addMessage(content, role, timestamp, audioData, memorySuggestion = null) {
+    function clearRegenerateButtons() {
+        document.querySelectorAll(".regen-btn").forEach((button) => button.remove());
+    }
+
+    async function regenerateLatestResponse() {
+        if (!state.currentConvId) {
+            return;
+        }
+
+        clearRegenerateButtons();
+        addTypingIndicator();
+        const preference = getCurrentPreference();
+        try {
+            const data = await apiFetch("/api/chat", {
+                method: "POST",
+                body: JSON.stringify({
+                    conversation_id: state.currentConvId,
+                    mode: state.currentMode,
+                    model: modelSelect.value,
+                    persona_name: preference.persona_name,
+                    system_prompt: preference.system_prompt,
+                    regenerate: true,
+                }),
+            });
+            removeTypingIndicator();
+            await loadConversation(state.currentConvId);
+            if (data.local_mode) {
+                apiNoticeText.textContent = data.fallback_reason
+                    ? `Fallback reason: ${data.fallback_reason}`
+                    : "Running in fallback mode because no external model answered.";
+                apiNotice.classList.remove("hidden");
+            } else {
+                apiNotice.classList.add("hidden");
+                apiNoticeText.textContent = "Running in fallback mode because no external model answered.";
+            }
+        } catch (error) {
+            removeTypingIndicator();
+            addMessage(error.message || "Could not regenerate the reply.", "assistant", new Date().toISOString(), null);
+        }
+    }
+
+    function addMessage(content, role, timestamp, audioData, memorySuggestion = null, allowRegenerate = false) {
         document.getElementById("welcomeBlock")?.remove();
 
         const row = document.createElement("div");
@@ -329,6 +371,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 speakText(content);
             });
             actions.appendChild(readBtn);
+
+            if (allowRegenerate && state.currentConvId) {
+                clearRegenerateButtons();
+                const regenBtn = document.createElement("button");
+                regenBtn.className = "audio-btn regen-btn";
+                regenBtn.type = "button";
+                regenBtn.innerHTML = '<i class="fas fa-rotate-right"></i> Regenerate';
+                regenBtn.addEventListener("click", regenerateLatestResponse);
+                actions.appendChild(regenBtn);
+            }
+
             wrap.appendChild(actions);
 
             if (memorySuggestion?.title && memorySuggestion?.content) {
@@ -487,7 +540,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!messages.length) {
             chatContainer.appendChild(createWelcome());
         } else {
-            messages.forEach((message) => addMessage(message.content, message.role, message.timestamp, null));
+            const lastAssistantIndex = [...messages].map((message) => message.role).lastIndexOf("assistant");
+            messages.forEach((message, index) => addMessage(
+                message.content,
+                message.role,
+                message.timestamp,
+                null,
+                null,
+                index === lastAssistantIndex,
+            ));
         }
         document.querySelectorAll(".conv-item").forEach((el) => {
             el.classList.toggle("active", Number(el.dataset.id) === id);
@@ -528,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 topbarTitle.textContent = data.conversation_title;
                 await loadConversations();
             }
-            addMessage(data.message, "assistant", data.timestamp, data.audio || null, data.memory_suggestion || null);
+            addMessage(data.message, "assistant", data.timestamp, data.audio || null, data.memory_suggestion || null, true);
             if (data.local_mode) {
                 apiNoticeText.textContent = data.fallback_reason
                     ? `Fallback reason: ${data.fallback_reason}`
