@@ -85,6 +85,7 @@ if trusted_hosts:
 openrouter_api_key = os.environ.get("OPENROUTER_API") or os.environ.get("OPENROUTERAI_API")
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
+response_max_tokens = int(os.environ.get("MAX_RESPONSE_TOKENS", "1600"))
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
@@ -710,7 +711,7 @@ def create_model_response(messages, model_choice):
             failure_notes.append("OpenRouter: missing API key")
             return None
         try:
-            payload = {"model": model_id, "messages": messages, "max_tokens": 700, "temperature": 0.7}
+            payload = {"model": model_id, "messages": messages, "max_tokens": response_max_tokens, "temperature": 0.7}
             headers = {
                 "Authorization": f"Bearer {openrouter_api_key}",
                 "Content-Type": "application/json",
@@ -737,7 +738,7 @@ def create_model_response(messages, model_choice):
             import openai
 
             client = openai.OpenAI(api_key=openai_api_key)
-            response = client.chat.completions.create(model=model_id, messages=messages, max_tokens=700)
+            response = client.chat.completions.create(model=model_id, messages=messages, max_tokens=response_max_tokens)
             return response.choices[0].message.content
         except Exception as exc:
             app.logger.warning("OpenAI request failed: %s", exc)
@@ -753,7 +754,7 @@ def create_model_response(messages, model_choice):
             client = anthropic.Anthropic(api_key=anthropic_api_key)
             system_msg = next((message["content"] for message in messages if message["role"] == "system"), "")
             user_messages = [message for message in messages if message["role"] != "system"]
-            response = client.messages.create(model=model_id, max_tokens=700, system=system_msg, messages=user_messages)
+            response = client.messages.create(model=model_id, max_tokens=response_max_tokens, system=system_msg, messages=user_messages)
             return response.content[0].text
         except Exception as exc:
             app.logger.warning("Anthropic request failed: %s", exc)
