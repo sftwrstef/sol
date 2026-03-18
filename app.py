@@ -12,7 +12,6 @@ import zipfile
 from datetime import datetime, timedelta
 from functools import wraps
 
-from cryptography.fernet import Fernet, InvalidToken
 import requests
 from flask import Flask, g, jsonify, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
@@ -87,12 +86,6 @@ openrouter_api_key = os.environ.get("OPENROUTER_API") or os.environ.get("OPENROU
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
 response_max_tokens = int(os.environ.get("MAX_RESPONSE_TOKENS", "1600"))
-user_key_encryption_secret = os.environ.get("USER_KEY_ENCRYPTION_SECRET")
-demo_max_requests_per_session = int(os.environ.get("DEMO_MAX_REQUESTS_PER_SESSION", "15"))
-demo_max_requests_per_minute = int(os.environ.get("DEMO_MAX_REQUESTS_PER_MINUTE", "5"))
-demo_allowed_models = {
-    model.strip() for model in os.environ.get("DEMO_ALLOWED_MODELS", "gpt-4o-mini,gpt-4.1-mini,free").split(",") if model.strip()
-}
 auto_schema_sync_on_request = env_flag("AUTO_SCHEMA_SYNC_ON_REQUEST", not bool(os.environ.get("VERCEL")))
 
 db = SQLAlchemy(model_class=Base)
@@ -106,7 +99,6 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     display_name = db.Column(db.String(120), nullable=True)
     about_me = db.Column(db.Text, nullable=True)
-    access_mode = db.Column(db.String(16), default="demo", nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
@@ -116,42 +108,8 @@ class User(db.Model):
             "email": self.email,
             "display_name": self.display_name or "",
             "about_me": self.about_me or "",
-            "access_mode": self.access_mode or "demo",
             "created_at": self.created_at.isoformat(),
         }
-
-
-class UserApiKey(db.Model):
-    __tablename__ = "user_api_key"
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    provider = db.Column(db.String(24), nullable=False, index=True)
-    encrypted_key = db.Column(db.Text, nullable=False)
-    last4 = db.Column(db.String(4), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-
-    def to_dict(self):
-        return {
-            "provider": self.provider,
-            "has_key": True,
-            "last4": self.last4 or "",
-            "updated_at": self.updated_at.isoformat(),
-        }
-
-
-class DemoUsage(db.Model):
-    __tablename__ = "demo_usage"
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
-    session_token = db.Column(db.String(120), nullable=False, index=True)
-    request_count = db.Column(db.Integer, default=0, nullable=False)
-    window_started_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    requests_in_window = db.Column(db.Integer, default=0, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 class UserPreference(db.Model):
@@ -270,9 +228,6 @@ def migrate_database():
             db.session.execute(text('ALTER TABLE "user" ADD COLUMN display_name VARCHAR(120)'))
         if "about_me" not in columns:
             db.session.execute(text('ALTER TABLE "user" ADD COLUMN about_me TEXT'))
-        if "access_mode" not in columns:
-            db.session.execute(text('ALTER TABLE "user" ADD COLUMN access_mode VARCHAR(16) DEFAULT \'demo\''))
-            db.session.execute(text('UPDATE "user" SET access_mode = \'demo\' WHERE access_mode IS NULL'))
 
     if "user_preference" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("user_preference")}
@@ -312,20 +267,6 @@ def migrate_database():
         if "updated_at" not in columns:
             db.session.execute(text("ALTER TABLE memory ADD COLUMN updated_at DATETIME"))
             db.session.execute(text("UPDATE memory SET updated_at = created_at WHERE updated_at IS NULL"))
-
-    if "user_api_key" in inspector.get_table_names():
-        columns = {column["name"] for column in inspector.get_columns("user_api_key")}
-        if "last4" not in columns:
-            db.session.execute(text("ALTER TABLE user_api_key ADD COLUMN last4 VARCHAR(4)"))
-        if "updated_at" not in columns:
-            db.session.execute(text("ALTER TABLE user_api_key ADD COLUMN updated_at DATETIME"))
-            db.session.execute(text("UPDATE user_api_key SET updated_at = created_at WHERE updated_at IS NULL"))
-
-    if "demo_usage" in inspector.get_table_names():
-        columns = {column["name"] for column in inspector.get_columns("demo_usage")}
-        if "updated_at" not in columns:
-            db.session.execute(text("ALTER TABLE demo_usage ADD COLUMN updated_at DATETIME"))
-            db.session.execute(text("UPDATE demo_usage SET updated_at = created_at WHERE updated_at IS NULL"))
 
     db.session.commit()
 
@@ -434,31 +375,6 @@ def validate_password(password):
     return isinstance(password, str) and len(password) >= 8
 
 
-def get_key_cipher():
-    if not user_key_encryption_secret:
-        return None
-    key_bytes = user_key_encryption_secret.encode("utf-8")
-    derived = base64.urlsafe_b64encode(key_bytes.ljust(32, b"0")[:32])
-    return Fernet(derived)
-
-
-def encrypt_user_key(raw_key):
-    cipher = get_key_cipher()
-    if not cipher:
-        raise RuntimeError("USER_KEY_ENCRYPTION_SECRET is not configured")
-    return cipher.encrypt(raw_key.encode("utf-8")).decode("utf-8")
-
-
-def decrypt_user_key(encrypted_key):
-    cipher = get_key_cipher()
-    if not cipher:
-        return None
-    try:
-        return cipher.decrypt(encrypted_key.encode("utf-8")).decode("utf-8")
-    except InvalidToken:
-        return None
-
-
 def conversation_for_user(conv_id):
     return Conversation.query.filter_by(id=conv_id, user_id=g.current_user.id).first_or_404()
 
@@ -469,100 +385,6 @@ def memory_for_user(memory_id):
 
 def project_for_user(project_id):
     return Project.query.filter_by(id=project_id, user_id=g.current_user.id).first_or_404()
-
-
-def get_user_api_key_record(user_id, provider):
-    return UserApiKey.query.filter_by(user_id=user_id, provider=provider).first()
-
-
-def get_user_api_key(user_id, provider):
-    record = get_user_api_key_record(user_id, provider)
-    if not record:
-        return None
-    return decrypt_user_key(record.encrypted_key)
-
-
-def get_user_api_key_status_map(user_id):
-    records = UserApiKey.query.filter_by(user_id=user_id).all()
-    return {record.provider: record.to_dict() for record in records}
-
-
-def upsert_user_api_key(user_id, provider, raw_key):
-    record = get_user_api_key_record(user_id, provider)
-    if not record:
-        record = UserApiKey(user_id=user_id, provider=provider, created_at=datetime.utcnow())
-        db.session.add(record)
-    record.encrypted_key = encrypt_user_key(raw_key)
-    record.last4 = raw_key[-4:]
-    record.updated_at = datetime.utcnow()
-    db.session.commit()
-    return record
-
-
-def delete_user_api_key(user_id, provider):
-    record = get_user_api_key_record(user_id, provider)
-    if record:
-        db.session.delete(record)
-        db.session.commit()
-
-
-def get_demo_session_token():
-    token = session.get("demo_session_token")
-    if not token:
-        token = secrets.token_urlsafe(18)
-        session["demo_session_token"] = token
-    return token
-
-
-def enforce_demo_guardrails(user, model_choice):
-    if not user or (user.access_mode or "demo") != "demo":
-        return None
-
-    if model_choice not in demo_allowed_models:
-        label_map = {
-            "gpt-4o-mini": "GPT-4o Mini",
-            "gpt-4.1-mini": "GPT-4.1 Mini",
-            "free": "Free",
-            "claude-sonnet": "Claude Sonnet 4.5",
-            "claude-opus": "Claude Opus 4",
-            "gpt-4o": "GPT-4o",
-            "gpt-4.1": "GPT-4.1",
-        }
-        allowed_labels = [label_map.get(model, model) for model in demo_allowed_models]
-        allowed_text = ", ".join(allowed_labels) if allowed_labels else "approved demo models"
-        return f"Demo mode only allows {allowed_text}. Switch to BYOK to use premium models."
-
-    session_token = get_demo_session_token()
-    usage = DemoUsage.query.filter_by(user_id=user.id, session_token=session_token).first()
-    now = datetime.utcnow()
-    if not usage:
-        usage = DemoUsage(
-            user_id=user.id,
-            session_token=session_token,
-            request_count=0,
-            window_started_at=now,
-            requests_in_window=0,
-            created_at=now,
-            updated_at=now,
-        )
-        db.session.add(usage)
-        db.session.flush()
-
-    if usage.request_count >= demo_max_requests_per_session:
-        return "Demo limit reached. Switch to BYOK to continue."
-
-    if (now - usage.window_started_at).total_seconds() >= 60:
-        usage.window_started_at = now
-        usage.requests_in_window = 0
-
-    if usage.requests_in_window >= demo_max_requests_per_minute:
-        return "Demo rate limit reached. Wait a minute or switch to BYOK to continue."
-
-    usage.request_count += 1
-    usage.requests_in_window += 1
-    usage.updated_at = now
-    db.session.commit()
-    return None
 
 
 def get_preference_map(user_id):
@@ -986,28 +808,14 @@ def create_model_response(messages, model_choice, user=None):
         failure_notes.append(note)
         return None
 
-    def resolve_provider_key(provider):
-        if user and (user.access_mode or "demo") == "byok":
-            byo_key = get_user_api_key(user.id, provider)
-            if byo_key:
-                return byo_key
-        if provider == "openrouter":
-            return openrouter_api_key
-        if provider == "openai":
-            return openai_api_key
-        if provider == "anthropic":
-            return anthropic_api_key
-        return None
-
     def call_openrouter(model_id):
-        provider_key = resolve_provider_key("openrouter")
-        if not provider_key:
+        if not openrouter_api_key:
             failure_notes.append("OpenRouter: missing API key")
             return None
         try:
             payload = {"model": model_id, "messages": messages, "max_tokens": response_max_tokens, "temperature": 0.7}
             headers = {
-                "Authorization": f"Bearer {provider_key}",
+                "Authorization": f"Bearer {openrouter_api_key}",
                 "Content-Type": "application/json",
                 "HTTP-Referer": "https://example.com/",
                 "X-Title": "Sol Space",
@@ -1025,14 +833,13 @@ def create_model_response(messages, model_choice, user=None):
             return remember_failure("OpenRouter", exc)
 
     def call_openai(model_id):
-        provider_key = resolve_provider_key("openai")
-        if not provider_key:
+        if not openai_api_key:
             failure_notes.append("OpenAI: missing API key")
             return None
         try:
             import openai
 
-            client = openai.OpenAI(api_key=provider_key)
+            client = openai.OpenAI(api_key=openai_api_key)
             response = client.chat.completions.create(model=model_id, messages=messages, max_tokens=response_max_tokens)
             return response.choices[0].message.content
         except Exception as exc:
@@ -1040,14 +847,13 @@ def create_model_response(messages, model_choice, user=None):
             return remember_failure("OpenAI", exc)
 
     def call_anthropic(model_id):
-        provider_key = resolve_provider_key("anthropic")
-        if not provider_key:
+        if not anthropic_api_key:
             failure_notes.append("Anthropic: missing API key")
             return None
         try:
             import anthropic
 
-            client = anthropic.Anthropic(api_key=provider_key)
+            client = anthropic.Anthropic(api_key=anthropic_api_key)
             system_msg = next((message["content"] for message in messages if message["role"] == "system"), "")
             user_messages = [message for message in messages if message["role"] != "system"]
             response = client.messages.create(model=model_id, max_tokens=response_max_tokens, system=system_msg, messages=user_messages)
@@ -1109,19 +915,16 @@ def bootstrap():
     memories = []
     preferences = {}
     projects = []
-    api_keys = {}
     if g.current_user:
         try:
             memories = [memory.to_dict() for memory in Memory.query.filter_by(user_id=g.current_user.id).order_by(Memory.updated_at.desc()).limit(20).all()]
             preferences = get_preference_map(g.current_user.id)
             projects = [project.to_dict() for project in Project.query.filter_by(user_id=g.current_user.id).order_by(Project.updated_at.desc()).all()]
-            api_keys = get_user_api_key_status_map(g.current_user.id)
         except Exception as exc:
             app.logger.warning("Bootstrap data load failed: %s", exc)
             memories = []
             preferences = {}
             projects = []
-            api_keys = {}
     return jsonify(
         {
             "authenticated": bool(g.current_user),
@@ -1130,7 +933,6 @@ def bootstrap():
             "preferences": preferences,
             "memories": memories,
             "projects": projects,
-            "api_keys": api_keys,
         }
     )
 
@@ -1157,7 +959,6 @@ def register():
         session.permanent = True
         session["user_id"] = user.id
         session["csrf_token"] = secrets.token_urlsafe(24)
-        session["demo_session_token"] = secrets.token_urlsafe(18)
 
         return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]}), 201
     except Exception as exc:
@@ -1181,7 +982,6 @@ def login():
         session.permanent = True
         session["user_id"] = user.id
         session["csrf_token"] = secrets.token_urlsafe(24)
-        session["demo_session_token"] = secrets.token_urlsafe(18)
 
         return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]})
     except Exception as exc:
@@ -1203,42 +1003,8 @@ def update_profile():
     data = request.get_json(silent=True) or {}
     g.current_user.display_name = (data.get("display_name") or "").strip()[:120]
     g.current_user.about_me = (data.get("about_me") or "").strip()
-    access_mode = (data.get("access_mode") or g.current_user.access_mode or "demo").strip().lower()
-    if access_mode not in {"demo", "byok"}:
-        return jsonify({"error": "Invalid access mode"}), 400
-    g.current_user.access_mode = access_mode
     db.session.commit()
     return jsonify(g.current_user.to_dict())
-
-
-@app.route("/api/account/api-keys", methods=["GET"])
-@login_required_json
-def list_user_api_keys():
-    return jsonify(get_user_api_key_status_map(g.current_user.id))
-
-
-@app.route("/api/account/api-keys", methods=["PUT"])
-@login_required_json
-def save_user_api_key():
-    data = request.get_json(silent=True) or {}
-    provider = (data.get("provider") or "").strip().lower()
-    raw_key = (data.get("api_key") or "").strip()
-    if provider not in {"openrouter", "openai", "anthropic"}:
-        return jsonify({"error": "Invalid provider"}), 400
-    if not raw_key:
-        return jsonify({"error": "API key is required"}), 400
-    record = upsert_user_api_key(g.current_user.id, provider, raw_key)
-    return jsonify(record.to_dict())
-
-
-@app.route("/api/account/api-keys/<provider>", methods=["DELETE"])
-@login_required_json
-def remove_user_api_key(provider):
-    provider = (provider or "").strip().lower()
-    if provider not in {"openrouter", "openai", "anthropic"}:
-        return jsonify({"error": "Invalid provider"}), 400
-    delete_user_api_key(g.current_user.id, provider)
-    return jsonify({"success": True})
 
 
 @app.route("/api/conversations", methods=["GET"])
@@ -1494,10 +1260,6 @@ def chat():
     mode = data.get("mode", "companion")
     if mode not in {"companion", "coding"}:
         mode = "companion"
-
-    demo_error = enforce_demo_guardrails(g.current_user, model_choice)
-    if demo_error:
-        return jsonify({"error": demo_error}), 403
 
     if voice_input and not user_input:
         user_input = speech_to_text(voice_input) or ""

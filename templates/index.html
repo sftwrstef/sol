@@ -147,52 +147,6 @@
                 <label class="setting-label" for="profileAbout">About me</label>
                 <textarea id="profileAbout" class="setting-textarea" rows="6" placeholder="Who you are, how you like Sol to talk to you, what matters right now."></textarea>
             </div>
-            <div class="setting-group">
-                <label class="setting-label" for="accessMode">Account mode</label>
-                <select id="accessMode" class="setting-input">
-                    <option value="demo">Demo</option>
-                    <option value="byok">Bring your own API</option>
-                </select>
-                <p class="setting-hint">Demo uses the app’s shared keys. Bring your own API uses keys saved on your account.</p>
-            </div>
-            <div class="setting-group">
-                <label class="setting-label">Provider keys</label>
-                <div class="provider-key-list">
-                    <div class="provider-key-card">
-                        <div class="provider-key-header">
-                            <strong>OpenRouter</strong>
-                            <span class="provider-key-status" id="openrouterKeyStatus">Not saved</span>
-                        </div>
-                        <input type="password" id="openrouterKeyInput" class="setting-input" placeholder="Paste OpenRouter key">
-                        <div class="provider-key-actions">
-                            <button class="panel-action-btn" id="openrouterKeySave" type="button">Save key</button>
-                            <button class="panel-action-btn hidden" id="openrouterKeyDelete" type="button">Remove</button>
-                        </div>
-                    </div>
-                    <div class="provider-key-card">
-                        <div class="provider-key-header">
-                            <strong>OpenAI</strong>
-                            <span class="provider-key-status" id="openaiKeyStatus">Not saved</span>
-                        </div>
-                        <input type="password" id="openaiKeyInput" class="setting-input" placeholder="Paste OpenAI key">
-                        <div class="provider-key-actions">
-                            <button class="panel-action-btn" id="openaiKeySave" type="button">Save key</button>
-                            <button class="panel-action-btn hidden" id="openaiKeyDelete" type="button">Remove</button>
-                        </div>
-                    </div>
-                    <div class="provider-key-card">
-                        <div class="provider-key-header">
-                            <strong>Anthropic</strong>
-                            <span class="provider-key-status" id="anthropicKeyStatus">Not saved</span>
-                        </div>
-                        <input type="password" id="anthropicKeyInput" class="setting-input" placeholder="Paste Anthropic key">
-                        <div class="provider-key-actions">
-                            <button class="panel-action-btn" id="anthropicKeySave" type="button">Save key</button>
-                            <button class="panel-action-btn hidden" id="anthropicKeyDelete" type="button">Remove</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <p class="auth-error" id="profileError"></p>
         </div>
         <div class="modal-footer">
