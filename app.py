@@ -372,9 +372,19 @@ def get_csrf_token():
 
 @app.before_request
 def load_current_user():
-    user_id = session.get("user_id")
-    g.current_user = User.query.get(user_id) if user_id else None
-    g.csrf_token = get_csrf_token()
+    g.current_user = None
+    try:
+        user_id = session.get("user_id")
+        g.current_user = User.query.get(user_id) if user_id else None
+    except Exception as exc:
+        app.logger.warning("Current user lookup failed: %s", exc)
+        g.current_user = None
+
+    try:
+        g.csrf_token = get_csrf_token()
+    except Exception as exc:
+        app.logger.warning("CSRF token setup failed: %s", exc)
+        g.csrf_token = ""
 
     if request.path.startswith("/api/") and request.method in {"POST", "PATCH", "PUT", "DELETE"}:
         header_token = request.headers.get("X-CSRF-Token", "")
@@ -1101,10 +1111,17 @@ def bootstrap():
     projects = []
     api_keys = {}
     if g.current_user:
-        memories = [memory.to_dict() for memory in Memory.query.filter_by(user_id=g.current_user.id).order_by(Memory.updated_at.desc()).limit(20).all()]
-        preferences = get_preference_map(g.current_user.id)
-        projects = [project.to_dict() for project in Project.query.filter_by(user_id=g.current_user.id).order_by(Project.updated_at.desc()).all()]
-        api_keys = get_user_api_key_status_map(g.current_user.id)
+        try:
+            memories = [memory.to_dict() for memory in Memory.query.filter_by(user_id=g.current_user.id).order_by(Memory.updated_at.desc()).limit(20).all()]
+            preferences = get_preference_map(g.current_user.id)
+            projects = [project.to_dict() for project in Project.query.filter_by(user_id=g.current_user.id).order_by(Project.updated_at.desc()).all()]
+            api_keys = get_user_api_key_status_map(g.current_user.id)
+        except Exception as exc:
+            app.logger.warning("Bootstrap data load failed: %s", exc)
+            memories = []
+            preferences = {}
+            projects = []
+            api_keys = {}
     return jsonify(
         {
             "authenticated": bool(g.current_user),
