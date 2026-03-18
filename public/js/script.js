@@ -267,6 +267,9 @@ document.addEventListener("DOMContentLoaded", () => {
             appShell.classList.remove("hidden");
             accountName.textContent = state.user.display_name || "Sol account";
             accountEmail.textContent = state.user.email;
+            if ((state.user.access_mode || "demo") === "demo" && !["gpt-4o-mini", "gpt-4.1-mini", "free"].includes(modelSelect.value)) {
+                modelSelect.value = "gpt-4o-mini";
+            }
             updateModeUI();
         } else {
             appShell.classList.add("hidden");
@@ -703,7 +706,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (state.user) {
             await loadConversations();
             await loadMemories();
-            modelSelect.value = "gpt-4o";
+            modelSelect.value = (state.user.access_mode || "demo") === "demo" ? "gpt-4o-mini" : "gpt-4o";
             startNewChat();
             userInput.focus();
         }
@@ -777,6 +780,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             state.user = user;
             updateAuthenticatedUI();
+            if ((state.user.access_mode || "demo") === "demo" && !["gpt-4o-mini", "gpt-4.1-mini", "free"].includes(modelSelect.value)) {
+                modelSelect.value = "gpt-4o-mini";
+            }
             closeProfileModal();
         } catch (error) {
             profileError.textContent = error.message;

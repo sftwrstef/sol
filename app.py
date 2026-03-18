@@ -88,6 +88,12 @@ openai_api_key = os.environ.get("OPENAI_API_KEY")
 anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
 response_max_tokens = int(os.environ.get("MAX_RESPONSE_TOKENS", "1600"))
 user_key_encryption_secret = os.environ.get("USER_KEY_ENCRYPTION_SECRET")
+demo_max_requests_per_session = int(os.environ.get("DEMO_MAX_REQUESTS_PER_SESSION", "15"))
+demo_max_requests_per_minute = int(os.environ.get("DEMO_MAX_REQUESTS_PER_MINUTE", "5"))
+demo_allowed_models = {
+    model.strip() for model in os.environ.get("DEMO_ALLOWED_MODELS", "gpt-4o-mini,gpt-4.1-mini,free").split(",") if model.strip()
+}
+auto_schema_sync_on_request = env_flag("AUTO_SCHEMA_SYNC_ON_REQUEST", not bool(os.environ.get("VERCEL")))
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
@@ -133,6 +139,19 @@ class UserApiKey(db.Model):
             "last4": self.last4 or "",
             "updated_at": self.updated_at.isoformat(),
         }
+
+
+class DemoUsage(db.Model):
+    __tablename__ = "demo_usage"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    session_token = db.Column(db.String(120), nullable=False, index=True)
+    request_count = db.Column(db.Integer, default=0, nullable=False)
+    window_started_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    requests_in_window = db.Column(db.Integer, default=0, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 class UserPreference(db.Model):
@@ -302,6 +321,12 @@ def migrate_database():
             db.session.execute(text("ALTER TABLE user_api_key ADD COLUMN updated_at DATETIME"))
             db.session.execute(text("UPDATE user_api_key SET updated_at = created_at WHERE updated_at IS NULL"))
 
+    if "demo_usage" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("demo_usage")}
+        if "updated_at" not in columns:
+            db.session.execute(text("ALTER TABLE demo_usage ADD COLUMN updated_at DATETIME"))
+            db.session.execute(text("UPDATE demo_usage SET updated_at = created_at WHERE updated_at IS NULL"))
+
     db.session.commit()
 
 
@@ -315,6 +340,8 @@ def _init_db():
 
 
 def ensure_schema_fresh(force=False):
+    if not auto_schema_sync_on_request and not force:
+        return
     last_checked = getattr(app, "_schema_checked_at", 0)
     if not force and (time.time() - last_checked) < 30:
         return
@@ -323,11 +350,12 @@ def ensure_schema_fresh(force=False):
 
 
 if os.environ.get("VERCEL"):
-    # Vercel serverless: init DB lazily on first request
-    @app.before_request
-    def _ensure_db():
-        ensure_schema_fresh()
-        app._db_ready = True
+    # Vercel serverless: avoid schema mutation work during request startup by default.
+    if auto_schema_sync_on_request:
+        @app.before_request
+        def _ensure_db():
+            ensure_schema_fresh()
+            app._db_ready = True
 else:
     # Local development: init immediately
     with app.app_context():
@@ -344,7 +372,6 @@ def get_csrf_token():
 
 @app.before_request
 def load_current_user():
-    ensure_schema_fresh()
     user_id = session.get("user_id")
     g.current_user = User.query.get(user_id) if user_id else None
     g.csrf_token = get_csrf_token()
@@ -467,6 +494,65 @@ def delete_user_api_key(user_id, provider):
     if record:
         db.session.delete(record)
         db.session.commit()
+
+
+def get_demo_session_token():
+    token = session.get("demo_session_token")
+    if not token:
+        token = secrets.token_urlsafe(18)
+        session["demo_session_token"] = token
+    return token
+
+
+def enforce_demo_guardrails(user, model_choice):
+    if not user or (user.access_mode or "demo") != "demo":
+        return None
+
+    if model_choice not in demo_allowed_models:
+        label_map = {
+            "gpt-4o-mini": "GPT-4o Mini",
+            "gpt-4.1-mini": "GPT-4.1 Mini",
+            "free": "Free",
+            "claude-sonnet": "Claude Sonnet 4.5",
+            "claude-opus": "Claude Opus 4",
+            "gpt-4o": "GPT-4o",
+            "gpt-4.1": "GPT-4.1",
+        }
+        allowed_labels = [label_map.get(model, model) for model in demo_allowed_models]
+        allowed_text = ", ".join(allowed_labels) if allowed_labels else "approved demo models"
+        return f"Demo mode only allows {allowed_text}. Switch to BYOK to use premium models."
+
+    session_token = get_demo_session_token()
+    usage = DemoUsage.query.filter_by(user_id=user.id, session_token=session_token).first()
+    now = datetime.utcnow()
+    if not usage:
+        usage = DemoUsage(
+            user_id=user.id,
+            session_token=session_token,
+            request_count=0,
+            window_started_at=now,
+            requests_in_window=0,
+            created_at=now,
+            updated_at=now,
+        )
+        db.session.add(usage)
+        db.session.flush()
+
+    if usage.request_count >= demo_max_requests_per_session:
+        return "Demo limit reached. Switch to BYOK to continue."
+
+    if (now - usage.window_started_at).total_seconds() >= 60:
+        usage.window_started_at = now
+        usage.requests_in_window = 0
+
+    if usage.requests_in_window >= demo_max_requests_per_minute:
+        return "Demo rate limit reached. Wait a minute or switch to BYOK to continue."
+
+    usage.request_count += 1
+    usage.requests_in_window += 1
+    usage.updated_at = now
+    db.session.commit()
+    return None
 
 
 def get_preference_map(user_id):
@@ -870,12 +956,18 @@ def create_model_response(messages, model_choice, user=None):
     openrouter_models = {
         "gpt-4.1": "openai/gpt-4.1",
         "gpt-4.1-mini": "openai/gpt-4.1-mini",
+        "gpt-4o-mini": "openai/gpt-4o-mini",
         "gpt-4o": "openai/gpt-4o",
         "claude-sonnet": "anthropic/claude-sonnet-4-5",
         "claude-opus": "anthropic/claude-opus-4",
         "free": "meta-llama/llama-3.1-8b-instruct:free",
     }
-    openai_models = {"gpt-4.1": "gpt-4.1", "gpt-4.1-mini": "gpt-4.1-mini", "gpt-4o": "gpt-4o"}
+    openai_models = {
+        "gpt-4.1": "gpt-4.1",
+        "gpt-4.1-mini": "gpt-4.1-mini",
+        "gpt-4o-mini": "gpt-4o-mini",
+        "gpt-4o": "gpt-4o",
+    }
     failure_notes = []
 
     def remember_failure(source, exc):
@@ -1048,6 +1140,7 @@ def register():
         session.permanent = True
         session["user_id"] = user.id
         session["csrf_token"] = secrets.token_urlsafe(24)
+        session["demo_session_token"] = secrets.token_urlsafe(18)
 
         return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]}), 201
     except Exception as exc:
@@ -1071,6 +1164,7 @@ def login():
         session.permanent = True
         session["user_id"] = user.id
         session["csrf_token"] = secrets.token_urlsafe(24)
+        session["demo_session_token"] = secrets.token_urlsafe(18)
 
         return jsonify({"user": user.to_dict(), "csrf_token": session["csrf_token"]})
     except Exception as exc:
@@ -1383,6 +1477,10 @@ def chat():
     mode = data.get("mode", "companion")
     if mode not in {"companion", "coding"}:
         mode = "companion"
+
+    demo_error = enforce_demo_guardrails(g.current_user, model_choice)
+    if demo_error:
+        return jsonify({"error": demo_error}), 403
 
     if voice_input and not user_input:
         user_input = speech_to_text(voice_input) or ""
