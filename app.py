@@ -182,6 +182,8 @@ class Conversation(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey("project.id", ondelete="SET NULL"), nullable=True, index=True)
     title = db.Column(db.String(200), default="New Chat", nullable=False)
     mode = db.Column(db.String(32), default="companion", nullable=False)
+    summary_text = db.Column(db.Text, nullable=True)
+    summarized_message_count = db.Column(db.Integer, default=0, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def to_dict(self):
@@ -190,6 +192,8 @@ class Conversation(db.Model):
             "project_id": self.project_id,
             "title": self.title,
             "mode": self.mode,
+            "summary_text": self.summary_text or "",
+            "summarized_message_count": self.summarized_message_count or 0,
             "created_at": self.created_at.isoformat(),
         }
 
@@ -245,6 +249,11 @@ def migrate_database():
             db.session.execute(text("ALTER TABLE conversation ADD COLUMN mode VARCHAR(32) DEFAULT 'companion'"))
         if "project_id" not in columns:
             db.session.execute(text("ALTER TABLE conversation ADD COLUMN project_id INTEGER"))
+        if "summary_text" not in columns:
+            db.session.execute(text("ALTER TABLE conversation ADD COLUMN summary_text TEXT"))
+        if "summarized_message_count" not in columns:
+            db.session.execute(text("ALTER TABLE conversation ADD COLUMN summarized_message_count INTEGER DEFAULT 0"))
+            db.session.execute(text("UPDATE conversation SET summarized_message_count = 0 WHERE summarized_message_count IS NULL"))
         db.session.execute(text("UPDATE conversation SET mode = 'companion' WHERE mode IS NULL"))
 
     if "message" in inspector.get_table_names():
@@ -482,6 +491,78 @@ def get_message_records(conversation_id):
     return Message.query.filter_by(conversation_id=conversation_id).order_by(Message.timestamp, Message.id).all()
 
 
+def summarize_messages(messages, mode, model_choice, existing_summary=""):
+    if not messages:
+        return existing_summary or ""
+
+    transcript_lines = []
+    for message in messages:
+        role = "User" if message.role == "user" else "Assistant"
+        content = (message.content or "").strip()
+        if content:
+            transcript_lines.append(f"{role}: {content}")
+
+    if not transcript_lines:
+        return existing_summary or ""
+
+    summary_prompt = (
+        "Summarize older chat history for future assistant context. "
+        "Preserve stable facts, preferences, names, emotional themes, decisions, unresolved questions, and useful continuity. "
+        "Keep it compact but specific. Return plain text only."
+    )
+    if mode == "coding":
+        summary_prompt = (
+            "Summarize older coding conversation history for future assistant context. "
+            "Preserve architecture decisions, bugs, constraints, stack details, file paths, unfinished tasks, and preferred implementation direction. "
+            "Keep it compact but specific. Return plain text only."
+        )
+
+    summary_input = ""
+    if existing_summary:
+        summary_input += f"Existing summary:\n{existing_summary}\n\n"
+    summary_input += "New older messages to fold in:\n" + "\n".join(transcript_lines)
+
+    generated, _ = create_model_response(
+        [
+            {"role": "system", "content": summary_prompt},
+            {"role": "user", "content": summary_input},
+        ],
+        model_choice,
+    )
+
+    if generated:
+        return generated.strip()
+
+    fallback_lines = []
+    if existing_summary:
+        fallback_lines.append(existing_summary.strip())
+    fallback_lines.extend(transcript_lines[-10:])
+    return "\n".join(fallback_lines).strip()[:4000]
+
+
+def ensure_conversation_summary(conversation, messages, mode, model_choice, recent_window=10, threshold=16):
+    if len(messages) <= threshold:
+        return messages, conversation.summary_text or ""
+
+    target_count = max(0, len(messages) - recent_window)
+    summarized_count = conversation.summarized_message_count or 0
+
+    if target_count <= summarized_count:
+        return messages, conversation.summary_text or ""
+
+    messages_to_summarize = messages[:target_count]
+    summary_text = summarize_messages(
+        messages_to_summarize,
+        mode,
+        model_choice,
+        existing_summary=conversation.summary_text or "",
+    )
+    conversation.summary_text = summary_text
+    conversation.summarized_message_count = target_count
+    db.session.commit()
+    return messages[target_count:], summary_text
+
+
 def build_memory_context(user_id, limit=8):
     memories = Memory.query.filter_by(user_id=user_id).order_by(Memory.updated_at.desc()).limit(limit).all()
     if not memories:
@@ -540,7 +621,7 @@ def maybe_suggest_memory(user, user_message, assistant_reply, model_choice):
         "If nothing should be saved, return {\"save\": false, \"title\": \"\", \"content\": \"\"}."
     ).strip()
 
-    raw = create_model_response(
+    raw, _ = create_model_response(
         [
             {"role": "system", "content": extraction_prompt},
             {"role": "user", "content": extraction_input},
@@ -1199,6 +1280,7 @@ def chat():
     else:
         history = [{"role": message.role, "content": message.content} for message in existing_messages]
         history.append({"role": "user", "content": user_input})
+
     system_prompt = build_system_prompt(mode, persona_name, custom_system_prompt)
     profile_context = build_profile_context(g.current_user)
     if profile_context:
@@ -1206,6 +1288,19 @@ def chat():
     memory_context = build_memory_context(g.current_user.id)
     if memory_context:
         system_prompt = f"{system_prompt}\n\n{memory_context}\nUse these memories when relevant, but do not mention them unless it helps."
+    recent_messages, conversation_summary = ensure_conversation_summary(conversation, existing_messages, mode, model_choice)
+    if regenerate and recent_messages and recent_messages[-1].role == "assistant":
+        recent_messages = recent_messages[:-1]
+    history = [{"role": message.role, "content": message.content} for message in recent_messages]
+    if not regenerate:
+        history.append({"role": "user", "content": user_input})
+
+    if conversation_summary:
+        system_prompt = (
+            f"{system_prompt}\n\nConversation summary:\n{conversation_summary}\n"
+            "Use this summary as background context for older parts of the thread."
+        )
+
     messages = [{"role": "system", "content": system_prompt}] + history
 
     reply, fallback_reason = create_model_response(messages, model_choice)
