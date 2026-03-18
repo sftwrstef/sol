@@ -923,6 +923,37 @@ button, input, textarea, select {
     overflow: hidden;
 }
 
+.provider-key-list {
+    display: grid;
+    gap: 12px;
+}
+
+.provider-key-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.provider-key-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.provider-key-status {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.provider-key-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .setting-group {
     display: grid;
     gap: 8px;

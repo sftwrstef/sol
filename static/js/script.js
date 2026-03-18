@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         audioChunks: [],
         preferences: {},
         memories: [],
+        apiKeys: {},
         editingMemoryId: null,
         regenerateModelOverride: "",
     };
@@ -70,7 +71,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSave = document.getElementById("profileSave");
     const profileName = document.getElementById("profileName");
     const profileAbout = document.getElementById("profileAbout");
+    const accessMode = document.getElementById("accessMode");
     const profileError = document.getElementById("profileError");
+    const openrouterKeyInput = document.getElementById("openrouterKeyInput");
+    const openrouterKeyStatus = document.getElementById("openrouterKeyStatus");
+    const openrouterKeySave = document.getElementById("openrouterKeySave");
+    const openrouterKeyDelete = document.getElementById("openrouterKeyDelete");
+    const openaiKeyInput = document.getElementById("openaiKeyInput");
+    const openaiKeyStatus = document.getElementById("openaiKeyStatus");
+    const openaiKeySave = document.getElementById("openaiKeySave");
+    const openaiKeyDelete = document.getElementById("openaiKeyDelete");
+    const anthropicKeyInput = document.getElementById("anthropicKeyInput");
+    const anthropicKeyStatus = document.getElementById("anthropicKeyStatus");
+    const anthropicKeySave = document.getElementById("anthropicKeySave");
+    const anthropicKeyDelete = document.getElementById("anthropicKeyDelete");
     const settingsModal = document.getElementById("settingsModal");
     const settingsClose = document.getElementById("settingsClose");
     const settingsSave = document.getElementById("settingsSave");
@@ -258,6 +272,23 @@ document.addEventListener("DOMContentLoaded", () => {
             appShell.classList.add("hidden");
             authShell.classList.remove("hidden");
         }
+    }
+
+    function renderApiKeyStatus(provider, statusEl, deleteBtn) {
+        const record = state.apiKeys[provider];
+        if (record?.has_key) {
+            statusEl.textContent = `Saved${record.last4 ? ` • ending in ${record.last4}` : ""}`;
+            deleteBtn.classList.remove("hidden");
+        } else {
+            statusEl.textContent = "Not saved";
+            deleteBtn.classList.add("hidden");
+        }
+    }
+
+    function renderApiKeyStatuses() {
+        renderApiKeyStatus("openrouter", openrouterKeyStatus, openrouterKeyDelete);
+        renderApiKeyStatus("openai", openaiKeyStatus, openaiKeyDelete);
+        renderApiKeyStatus("anthropic", anthropicKeyStatus, anthropicKeyDelete);
     }
 
     function formatContent(text) {
@@ -667,6 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
         state.user = data.user;
         state.preferences = data.preferences || {};
         state.memories = data.memories || [];
+        state.apiKeys = data.api_keys || {};
         updateAuthenticatedUI();
         if (state.user) {
             await loadConversations();
@@ -719,6 +751,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function openProfileModal() {
         profileName.value = state.user?.display_name || "";
         profileAbout.value = state.user?.about_me || "";
+        accessMode.value = state.user?.access_mode || "demo";
+        openrouterKeyInput.value = "";
+        openaiKeyInput.value = "";
+        anthropicKeyInput.value = "";
+        renderApiKeyStatuses();
         profileError.textContent = "";
         profileModal.classList.add("open");
     }
@@ -735,6 +772,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     display_name: profileName.value.trim(),
                     about_me: profileAbout.value.trim(),
+                    access_mode: accessMode.value,
                 }),
             });
             state.user = user;
@@ -817,6 +855,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function closeQuickControls() {
         quickControlsModal.classList.remove("open");
+    }
+
+    async function saveProviderKey(provider, inputEl) {
+        profileError.textContent = "";
+        const apiKey = inputEl.value.trim();
+        if (!apiKey) {
+            profileError.textContent = "Paste a key before saving.";
+            return;
+        }
+        try {
+            const saved = await apiFetch("/api/account/api-keys", {
+                method: "PUT",
+                body: JSON.stringify({ provider, api_key: apiKey }),
+            });
+            state.apiKeys[provider] = saved;
+            inputEl.value = "";
+            renderApiKeyStatuses();
+        } catch (error) {
+            profileError.textContent = error.message;
+        }
+    }
+
+    async function removeProviderKey(provider) {
+        profileError.textContent = "";
+        try {
+            await apiFetch(`/api/account/api-keys/${provider}`, { method: "DELETE" });
+            delete state.apiKeys[provider];
+            renderApiKeyStatuses();
+        } catch (error) {
+            profileError.textContent = error.message;
+        }
     }
 
     async function saveMemory() {
@@ -950,6 +1019,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target === profileModal) closeProfileModal();
     });
     profileSave.addEventListener("click", saveProfile);
+    openrouterKeySave.addEventListener("click", () => saveProviderKey("openrouter", openrouterKeyInput));
+    openrouterKeyDelete.addEventListener("click", () => removeProviderKey("openrouter"));
+    openaiKeySave.addEventListener("click", () => saveProviderKey("openai", openaiKeyInput));
+    openaiKeyDelete.addEventListener("click", () => removeProviderKey("openai"));
+    anthropicKeySave.addEventListener("click", () => saveProviderKey("anthropic", anthropicKeyInput));
+    anthropicKeyDelete.addEventListener("click", () => removeProviderKey("anthropic"));
 
     memoryClose.addEventListener("click", closeMemoryModal);
     memoryModal.addEventListener("click", (event) => {
