@@ -686,15 +686,24 @@ def build_system_prompt(mode, persona_name, custom_system_prompt):
 def create_model_response(messages, model_choice):
     openrouter_models = {
         "gpt-4.1": "openai/gpt-4.1",
+        "gpt-4.1-mini": "openai/gpt-4.1-mini",
         "gpt-4o": "openai/gpt-4o",
         "claude-sonnet": "anthropic/claude-3.5-sonnet",
         "claude-opus": "anthropic/claude-3-opus",
         "free": "meta-llama/llama-3.1-8b-instruct:free",
     }
-    openai_models = {"gpt-4.1": "gpt-4.1", "gpt-4o": "gpt-4o"}
+    openai_models = {"gpt-4.1": "gpt-4.1", "gpt-4.1-mini": "gpt-4.1-mini", "gpt-4o": "gpt-4o"}
+    failure_notes = []
+
+    def remember_failure(source, exc):
+        message = str(exc).strip() or exc.__class__.__name__
+        note = f"{source}: {message}"
+        failure_notes.append(note)
+        return None
 
     def call_openrouter(model_id):
         if not openrouter_api_key:
+            failure_notes.append("OpenRouter: missing API key")
             return None
         try:
             payload = {"model": model_id, "messages": messages, "max_tokens": 700, "temperature": 0.7}
@@ -714,10 +723,11 @@ def create_model_response(messages, model_choice):
             return response.json()["choices"][0]["message"]["content"]
         except Exception as exc:
             app.logger.warning("OpenRouter request failed: %s", exc)
-            return None
+            return remember_failure("OpenRouter", exc)
 
     def call_openai(model_id):
         if not openai_api_key:
+            failure_notes.append("OpenAI: missing API key")
             return None
         try:
             import openai
@@ -727,10 +737,11 @@ def create_model_response(messages, model_choice):
             return response.choices[0].message.content
         except Exception as exc:
             app.logger.warning("OpenAI request failed: %s", exc)
-            return None
+            return remember_failure("OpenAI", exc)
 
     def call_anthropic(model_id):
         if not anthropic_api_key:
+            failure_notes.append("Anthropic: missing API key")
             return None
         try:
             import anthropic
@@ -742,20 +753,23 @@ def create_model_response(messages, model_choice):
             return response.content[0].text
         except Exception as exc:
             app.logger.warning("Anthropic request failed: %s", exc)
-            return None
+            return remember_failure("Anthropic", exc)
 
     if model_choice == "free":
-        return call_openrouter(openrouter_models["free"])
+        reply = call_openrouter(openrouter_models["free"])
+        return reply, "; ".join(failure_notes)
 
     if model_choice in {"claude-sonnet", "claude-opus"}:
         anthropic_model_map = {
             "claude-sonnet": "claude-3-5-sonnet-20241022",
             "claude-opus": "claude-3-opus-20240229",
         }
-        return call_anthropic(anthropic_model_map[model_choice]) or call_openrouter(openrouter_models[model_choice])
+        reply = call_anthropic(anthropic_model_map[model_choice]) or call_openrouter(openrouter_models[model_choice])
+        return reply, "; ".join(failure_notes)
 
     openai_model = openai_models.get(model_choice, "gpt-4o")
-    return call_openai(openai_model) or call_openrouter(openrouter_models.get(model_choice, "openai/gpt-4o"))
+    reply = call_openai(openai_model) or call_openrouter(openrouter_models.get(model_choice, "openai/gpt-4o"))
+    return reply, "; ".join(failure_notes)
 
 
 @app.route("/api/health")
@@ -1126,7 +1140,7 @@ def chat():
     voice_input = data.get("voice_data")
     conversation_id = data.get("conversation_id")
     project_id = data.get("project_id")
-    model_choice = data.get("model", "gpt-4.1")
+    model_choice = data.get("model", "gpt-4o")
     persona_name = (data.get("persona_name") or "").strip()
     custom_system_prompt = (data.get("system_prompt") or "").strip() or None
     mode = data.get("mode", "companion")
@@ -1174,7 +1188,7 @@ def chat():
         system_prompt = f"{system_prompt}\n\n{memory_context}\nUse these memories when relevant, but do not mention them unless it helps."
     messages = [{"role": "system", "content": system_prompt}] + history
 
-    reply = create_model_response(messages, model_choice)
+    reply, fallback_reason = create_model_response(messages, model_choice)
     local_mode = not bool(reply)
     if not reply:
         reply = generate_local_response(user_input, mode, persona_name)
@@ -1201,6 +1215,7 @@ def chat():
         "message": reply,
         "timestamp": datetime.utcnow().isoformat(),
         "local_mode": local_mode,
+        "fallback_reason": fallback_reason if local_mode else "",
         "conversation_id": conversation.id,
         "conversation_title": conversation.title,
         "conversation_mode": conversation.mode,

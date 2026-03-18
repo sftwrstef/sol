@@ -106,7 +106,8 @@
 
         <div class="input-wrap">
             <div id="apiNotice" class="api-notice hidden">
-                <i class="fas fa-triangle-exclamation"></i> Running in fallback mode because no external model answered.
+                <i class="fas fa-triangle-exclamation"></i>
+                <span id="apiNoticeText">Running in fallback mode because no external model answered.</span>
             </div>
             <div id="recordingBar" class="recording-bar">
                 <div class="rec-dot"></div>
@@ -214,8 +215,9 @@
                 <label class="sidebar-section-label" for="modelSelect">Model</label>
                 <select id="modelSelect" class="model-select">
                     <optgroup label="OpenAI">
+                        <option value="gpt-4o" selected>GPT-4o</option>
+                        <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
                         <option value="gpt-4.1">GPT-4.1</option>
-                        <option value="gpt-4o">GPT-4o</option>
                     </optgroup>
                     <optgroup label="Anthropic">
                         <option value="claude-sonnet">Claude 3.5 Sonnet</option>

@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const welcomeSub = document.getElementById("welcomeSub");
     const chatContainer = document.getElementById("chatContainer");
     const apiNotice = document.getElementById("apiNotice");
+    const apiNoticeText = document.getElementById("apiNoticeText");
     const modelSelect = document.getElementById("modelSelect");
     const userInput = document.getElementById("userInput");
     const sendBtn = document.getElementById("sendBtn");
@@ -528,7 +529,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadConversations();
             }
             addMessage(data.message, "assistant", data.timestamp, data.audio || null, data.memory_suggestion || null);
-            apiNotice.classList.toggle("hidden", !data.local_mode);
+            if (data.local_mode) {
+                apiNoticeText.textContent = data.fallback_reason
+                    ? `Fallback reason: ${data.fallback_reason}`
+                    : "Running in fallback mode because no external model answered.";
+                apiNotice.classList.remove("hidden");
+            } else {
+                apiNotice.classList.add("hidden");
+                apiNoticeText.textContent = "Running in fallback mode because no external model answered.";
+            }
             if (data.audio && state.enableVoiceOutput) {
                 responseAudio.src = data.audio;
                 responseAudio.play();
@@ -601,6 +610,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (state.user) {
             await loadConversations();
             await loadMemories();
+            modelSelect.value = "gpt-4o";
             startNewChat();
             userInput.focus();
         }
