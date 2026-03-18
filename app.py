@@ -688,8 +688,8 @@ def create_model_response(messages, model_choice):
         "gpt-4.1": "openai/gpt-4.1",
         "gpt-4.1-mini": "openai/gpt-4.1-mini",
         "gpt-4o": "openai/gpt-4o",
-        "claude-sonnet": "anthropic/claude-3.5-sonnet",
-        "claude-opus": "anthropic/claude-3-opus",
+        "claude-sonnet": "anthropic/claude-sonnet-4-5",
+        "claude-opus": "anthropic/claude-opus-4",
         "free": "meta-llama/llama-3.1-8b-instruct:free",
     }
     openai_models = {"gpt-4.1": "gpt-4.1", "gpt-4.1-mini": "gpt-4.1-mini", "gpt-4o": "gpt-4o"}
