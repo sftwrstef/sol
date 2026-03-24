@@ -671,7 +671,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (state.user) {
             await loadConversations();
             await loadMemories();
-            modelSelect.value = "gpt-4o";
+            modelSelect.value = "gpt-4.1-mini";
             startNewChat();
             userInput.focus();
         }

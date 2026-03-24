@@ -792,6 +792,7 @@ def create_model_response(messages, model_choice, user=None):
         "gpt-4o": "openai/gpt-4o",
         "claude-sonnet": "anthropic/claude-sonnet-4-5",
         "claude-opus": "anthropic/claude-opus-4",
+        "minimax-m2-her": "minimax/minimax-m2-her",
         "free": "meta-llama/llama-3.1-8b-instruct:free",
     }
     openai_models = {
@@ -874,8 +875,8 @@ def create_model_response(messages, model_choice, user=None):
         reply = call_anthropic(anthropic_model_map[model_choice]) or call_openrouter(openrouter_models[model_choice])
         return reply, "; ".join(failure_notes)
 
-    openai_model = openai_models.get(model_choice, "gpt-4o")
-    reply = call_openai(openai_model) or call_openrouter(openrouter_models.get(model_choice, "openai/gpt-4o"))
+    openai_model = openai_models.get(model_choice, "gpt-4.1-mini")
+    reply = call_openai(openai_model) or call_openrouter(openrouter_models.get(model_choice, "openai/gpt-4.1-mini"))
     return reply, "; ".join(failure_notes)
 
 
@@ -1253,7 +1254,7 @@ def chat():
     voice_input = data.get("voice_data")
     conversation_id = data.get("conversation_id")
     project_id = data.get("project_id")
-    model_choice = data.get("model", "gpt-4o")
+    model_choice = data.get("model", "gpt-4.1-mini")
     persona_name = (data.get("persona_name") or "").strip()
     custom_system_prompt = (data.get("system_prompt") or "").strip() or None
     regenerate = bool(data.get("regenerate"))
