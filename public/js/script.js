@@ -590,6 +590,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 await loadConversations();
             }
             addMessage(data.message, "assistant", data.timestamp, data.audio || null, data.memory_suggestion || null, true);
+            if (Array.isArray(data.web_fetch_errors) && data.web_fetch_errors.length) {
+                const details = data.web_fetch_errors
+                    .map((item) => `${item.url}: ${item.error}`)
+                    .join("\n");
+                addMessage(`I couldn't read part of the web content:\n${details}`, "assistant", new Date().toISOString(), null);
+            }
             if (data.local_mode) {
                 apiNoticeText.textContent = data.fallback_reason
                     ? `Fallback reason: ${data.fallback_reason}`

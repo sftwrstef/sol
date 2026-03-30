@@ -1,14 +1,20 @@
 import base64
 import io
+import ipaddress
 import json
 import logging
 import os
 import random
+import re
 import secrets
+import socket
 import subprocess
 import tempfile
 import time
 import zipfile
+from html import unescape
+from html.parser import HTMLParser
+from urllib.parse import urlparse
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -87,6 +93,9 @@ openai_api_key = os.environ.get("OPENAI_API_KEY")
 anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
 response_max_tokens = int(os.environ.get("MAX_RESPONSE_TOKENS", "1600"))
 auto_schema_sync_on_request = env_flag("AUTO_SCHEMA_SYNC_ON_REQUEST", not bool(os.environ.get("VERCEL")))
+web_fetch_timeout = float(os.environ.get("WEB_FETCH_TIMEOUT", "8"))
+web_fetch_byte_limit = int(os.environ.get("WEB_FETCH_BYTE_LIMIT", str(250_000)))
+web_context_char_limit = int(os.environ.get("WEB_CONTEXT_CHAR_LIMIT", "6000"))
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
@@ -219,6 +228,53 @@ class Message(db.Model):
         }
 
 
+class HTMLTextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self.title = ""
+        self._tag_stack = []
+        self._in_title = False
+        self._ignored_depth = 0
+
+    def handle_starttag(self, tag, attrs):
+        lowered = tag.lower()
+        self._tag_stack.append(lowered)
+        if lowered in {"script", "style", "noscript"}:
+            self._ignored_depth += 1
+        if lowered == "title":
+            self._in_title = True
+        if lowered in {"p", "div", "section", "article", "main", "h1", "h2", "h3", "h4", "h5", "h6", "li", "br"}:
+            self.parts.append("\n")
+
+    def handle_endtag(self, tag):
+        lowered = tag.lower()
+        if lowered in {"script", "style", "noscript"} and self._ignored_depth:
+            self._ignored_depth -= 1
+        if lowered == "title":
+            self._in_title = False
+        if lowered in {"p", "div", "section", "article", "main", "h1", "h2", "h3", "h4", "h5", "h6", "li"}:
+            self.parts.append("\n")
+        if self._tag_stack:
+            self._tag_stack.pop()
+
+    def handle_data(self, data):
+        if self._ignored_depth:
+            return
+        text = unescape(data or "")
+        if not text.strip():
+            return
+        if self._in_title:
+            self.title += text.strip() + " "
+        self.parts.append(text)
+
+    def extracted_text(self):
+        joined = "".join(self.parts)
+        joined = re.sub(r"[ \t]+", " ", joined)
+        joined = re.sub(r"\n{3,}", "\n\n", joined)
+        return joined.strip()
+
+
 def migrate_database():
     inspector = inspect(db.engine)
 
@@ -269,6 +325,132 @@ def migrate_database():
             db.session.execute(text("UPDATE memory SET updated_at = created_at WHERE updated_at IS NULL"))
 
     db.session.commit()
+
+
+def extract_urls(text):
+    if not text:
+        return []
+    seen = set()
+    urls = []
+    for match in re.finditer(r"https?://[^\s<>\"]+", text, flags=re.IGNORECASE):
+        url = match.group(0).rstrip(").,!?]}")
+        if url not in seen:
+            seen.add(url)
+            urls.append(url)
+    return urls[:2]
+
+
+def is_public_web_target(url):
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return False, "Only http and https URLs are supported."
+    hostname = (parsed.hostname or "").strip().lower()
+    if not hostname:
+        return False, "URL is missing a hostname."
+    blocked_hosts = {"localhost", "127.0.0.1", "::1"}
+    if hostname in blocked_hosts or hostname.endswith(".local"):
+        return False, "Local and private network URLs are blocked."
+    try:
+        addrinfo = socket.getaddrinfo(hostname, parsed.port or (443 if parsed.scheme == "https" else 80), proto=socket.IPPROTO_TCP)
+    except OSError:
+        return False, "Could not resolve the hostname."
+    for entry in addrinfo:
+        ip_text = entry[4][0]
+        try:
+            ip_obj = ipaddress.ip_address(ip_text)
+        except ValueError:
+            continue
+        if (
+            ip_obj.is_private
+            or ip_obj.is_loopback
+            or ip_obj.is_link_local
+            or ip_obj.is_multicast
+            or ip_obj.is_reserved
+            or ip_obj.is_unspecified
+        ):
+            return False, "Local and private network URLs are blocked."
+    return True, ""
+
+
+def extract_web_text(content_type, raw_bytes):
+    decoded = raw_bytes.decode("utf-8", errors="ignore")
+    lowered_type = (content_type or "").lower()
+    if "html" in lowered_type:
+        parser = HTMLTextExtractor()
+        parser.feed(decoded)
+        title = re.sub(r"\s+", " ", parser.title).strip()
+        text_content = parser.extracted_text()
+        return title, text_content
+    if "json" in lowered_type:
+        compact = re.sub(r"\s+", " ", decoded).strip()
+        return "", compact
+    compact = re.sub(r"\s+", " ", decoded).strip()
+    return "", compact
+
+
+def fetch_web_context(url):
+    allowed, reason = is_public_web_target(url)
+    if not allowed:
+        return {"url": url, "ok": False, "error": reason}
+    try:
+        response = requests.get(
+            url,
+            headers={
+                "User-Agent": "SolSpaceBot/1.0 (+https://vercel.app)",
+                "Accept": "text/html,application/json,text/plain;q=0.9,*/*;q=0.1",
+            },
+            timeout=web_fetch_timeout,
+            stream=True,
+            allow_redirects=True,
+        )
+        response.raise_for_status()
+        content_type = response.headers.get("Content-Type", "")
+        if not any(token in content_type.lower() for token in ("text/html", "text/plain", "application/json", "application/xhtml+xml")):
+            return {"url": url, "ok": False, "error": f"Unsupported content type: {content_type or 'unknown'}"}
+
+        chunks = []
+        total = 0
+        for chunk in response.iter_content(chunk_size=16_384):
+            if not chunk:
+                continue
+            next_total = total + len(chunk)
+            if next_total > web_fetch_byte_limit:
+                chunks.append(chunk[: max(0, web_fetch_byte_limit - total)])
+                break
+            chunks.append(chunk)
+            total = next_total
+
+        raw_bytes = b"".join(chunks)
+        title, text_content = extract_web_text(content_type, raw_bytes)
+        text_content = text_content[:web_context_char_limit].strip()
+        if not text_content:
+            return {"url": url, "ok": False, "error": "No readable text was found on the page."}
+        return {
+            "url": response.url,
+            "ok": True,
+            "title": title[:200],
+            "content": text_content,
+        }
+    except Exception as exc:
+        app.logger.warning("Web fetch failed for %s: %s", url, exc)
+        return {"url": url, "ok": False, "error": str(exc).strip() or "Request failed."}
+
+
+def build_web_context(user_input):
+    urls = extract_urls(user_input)
+    if not urls:
+        return "", []
+    results = [fetch_web_context(url) for url in urls]
+    usable = [result for result in results if result.get("ok")]
+    if not usable:
+        return "", results
+    sections = []
+    for item in usable:
+        heading = item["url"]
+        if item.get("title"):
+            heading += f" | {item['title']}"
+        sections.append(f"Source: {heading}\n{item['content']}")
+    return "Web page context from user-provided URLs:\n\n" + "\n\n".join(sections), results
 
 
 def _init_db():
@@ -792,6 +974,7 @@ def create_model_response(messages, model_choice, user=None):
         "gpt-4o": "openai/gpt-4o",
         "claude-sonnet": "anthropic/claude-sonnet-4-5",
         "claude-opus": "anthropic/claude-opus-4",
+        "grok-4.1-fast": "x-ai/grok-4.1-fast",
         "minimax-m2-her": "minimax/minimax-m2-her",
         "free": "meta-llama/llama-3.1-8b-instruct:free",
     }
@@ -1270,6 +1453,11 @@ def chat():
     if not user_input and not regenerate:
         return jsonify({"error": "No message provided"}), 400
 
+    web_context = ""
+    web_results = []
+    if user_input:
+        web_context, web_results = build_web_context(user_input)
+
     conversation = None
     if conversation_id:
         conversation = Conversation.query.filter_by(id=conversation_id, user_id=g.current_user.id).first()
@@ -1316,6 +1504,12 @@ def chat():
     memory_context = build_memory_context(g.current_user.id)
     if memory_context:
         system_prompt = f"{system_prompt}\n\n{memory_context}\nUse these memories when relevant, but do not mention them unless it helps."
+    if web_context:
+        system_prompt = (
+            f"{system_prompt}\n\n{web_context}\n"
+            "Use this web context only as support for the user's request. "
+            "If the fetched content looks incomplete or unreliable, say so plainly."
+        )
     recent_messages, conversation_summary = ensure_conversation_summary(conversation, existing_messages, mode, model_choice)
     if regenerate and recent_messages and recent_messages[-1].role == "assistant":
         recent_messages = recent_messages[:-1]
@@ -1369,6 +1563,13 @@ def chat():
         result["memory_suggestion"] = memory_suggestion
     if audio_data:
         result["audio"] = f"data:audio/mp3;base64,{audio_data}"
+    failed_web_results = [
+        {"url": item.get("url", ""), "error": item.get("error", "Request failed.")}
+        for item in web_results
+        if not item.get("ok")
+    ]
+    if failed_web_results:
+        result["web_fetch_errors"] = failed_web_results
     return jsonify(result)
 
 
